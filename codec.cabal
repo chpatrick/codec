@@ -1,0 +1,29 @@
+name:                codec
+version:             0.1.0.0
+-- synopsis:            
+-- description:         
+author:              Patrick Chilton
+maintainer:          chpatrick@gmail.com
+-- copyright:           
+category:            Data
+build-type:          Simple
+-- extra-source-files:  
+cabal-version:       >=1.10
+
+library
+  exposed-modules:     Data.Codec,
+                       Data.Codec.TH,
+
+                       Data.Binary.Codec
+  -- other-modules:       
+  extensions:          TemplateHaskell,
+                       MultiParamTypeClasses,
+                       FlexibleInstances,
+                       LambdaCase
+  build-depends:       base >=4.8,
+                       bytestring >=0.10,
+                       binary >=0.7,
+                       template-haskell >=2.10
+  -- hs-source-dirs:      
+  default-language:    Haskell2010
+  ghc-options:         -Wall -O2
