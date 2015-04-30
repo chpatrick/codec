@@ -5,12 +5,13 @@ module Data.Codec
   , Field(..)
   , Build(..), build, build_
   , Codec(..), codec
-  , FieldCodec, (><), always, mapCodec, mapCodecM
+  , FieldCodec, (><), always, mapCodec, mapCodecM, opt
   , (>>>)
   , Field1(..), Field2(..)
   )
 where
 
+import Control.Applicative (Alternative(..), optional)
 import Control.Category (Category(..), (>>>))
 import Prelude hiding (id, (.))
 
@@ -80,6 +81,11 @@ mapCodec to from ( r, w )
 mapCodecM :: (Monad fr, Monad fw) => (a -> fr b) -> (b -> fw a) -> FieldCodec fr fw a -> FieldCodec fr fw b
 mapCodecM to from ( r, w )
   = ( r >>= to, \x -> from x >>= w )
+
+-- | Given a `FieldCodec` for `a` produces one for `Maybe a` that applies its deserializer optionally
+-- and does nothing when serializing Nothing.
+opt :: (Alternative fr, Applicative fw) => FieldCodec fr fw a -> FieldCodec fr fw (Maybe a)
+opt ( r, w ) = ( optional r, maybe (pure ()) w )
 
 -- Some basic Fields
 

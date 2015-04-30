@@ -12,6 +12,7 @@ data User = User
   { username :: Text
   , userEmail :: Text
   , userLanguages :: [ Text ]
+  , userReferrer :: Maybe Text
   } deriving Show
 
 genFields ''User
@@ -21,6 +22,7 @@ userCodec = codec User
   $   f_username      >< "user"
   >>> f_userEmail     >< "email"
   >>> f_userLanguages >< "languages"
+  >>> f_userReferrer  >< opt "referrer"
 
 instance FromJSON User where
   parseJSON = parseObject userCodec "Expected a user object"

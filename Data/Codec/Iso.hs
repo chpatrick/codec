@@ -2,7 +2,7 @@
 
 module Data.Codec.Iso (iso, IsoBuild(..), (>-<)) where
 
-import Control.Category
+import Control.Category (Category(..))
 import Prelude hiding (id, (.))
 
 import Data.Codec

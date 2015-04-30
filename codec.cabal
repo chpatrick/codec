@@ -13,6 +13,7 @@ cabal-version:       >=1.10
 library
   exposed-modules:     Data.Codec,
                        Data.Codec.TH,
+                       Data.Codec.Iso
 
                        Data.Aeson.Codec
                        Data.Binary.Codec
