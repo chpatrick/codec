@@ -5,7 +5,7 @@ module Data.Codec.Iso (iso, IsoBuild(..), (>-<)) where
 import Control.Category (Category(..))
 import Prelude hiding (id, (.))
 
-import Data.Codec
+import Data.Codec (Field(..), Buildable(..))
 
 -- | Generate an isomorphism between two types by providing constructors for each and an `IsoBuild` representing matching fields.
 iso :: (Buildable a ay, Buildable b by)

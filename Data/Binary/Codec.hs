@@ -1,7 +1,8 @@
 module Data.Binary.Codec
-  ( BinaryFieldCodec
-  , byteString
+  ( byteString
   , word8
+  , BinaryCodec
+  , reversible
   )
  where
 
@@ -10,18 +11,25 @@ import Data.Binary.Get
 import Data.Binary.Put
 import Data.Word
 
-import Data.Codec (FieldCodec)
+import Data.Codec (Codec(..))
 
-type BinaryFieldCodec a = FieldCodec Get PutM a
+type BinaryCodec = Codec Get PutM
 
--- Data.Binary field codecs
-byteString :: Int -> BinaryFieldCodec BS.ByteString
-byteString n =
-  ( getByteString n
-  , \bs -> if BS.length bs == n
+-- | Get/put an n-byte field.
+byteString :: Int -> BinaryCodec BS.ByteString
+byteString n = Codec
+  { parse = getByteString n
+  , produce = \bs -> if BS.length bs == n
       then putByteString bs
       else fail "ByteString wrong size for field."
-  )
+  }
 
-word8 :: BinaryFieldCodec Word8
-word8 = ( getWord8, putWord8 )
+-- | Get/put a byte.
+word8 :: BinaryCodec Word8
+word8 = Codec getWord8 putWord8
+
+-- | Verify that a `BinaryCodec` is reversible for a given input.
+reversible :: Eq a => BinaryCodec a -> a -> Bool
+reversible cd x = case runGetOrFail (parse cd) (runPut (produce cd x)) of
+  Left ( _, _, _ ) -> False
+  Right ( _, _, y ) -> x == y

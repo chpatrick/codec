@@ -4,7 +4,7 @@ import Data.Foldable (foldl')
 import Data.Traversable (for)
 import Language.Haskell.TH
 
-import Data.Codec
+import Data.Codec.Common
 
 replaceAt :: a -> Int -> [ a ] -> [ a ]
 replaceAt x i xs = pr ++ x : suf
@@ -14,6 +14,8 @@ deleteAt :: Int -> [ a ] -> [ a ]
 deleteAt i xs = pr ++ suf
   where ( pr, _ : suf ) = splitAt i xs
 
+-- | Generate `Field`s for a given data type. Currently only single-constructor records are supported.
+-- Each record field @a@ will be turned into a `Field` @f_a@.
 genFields :: Name -> Q [ Dec ]
 genFields n = reify n >>= \case
   TyConI (DataD [] _ [] [ RecC _ fs ] _) -> do
