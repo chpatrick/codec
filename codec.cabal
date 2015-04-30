@@ -21,7 +21,8 @@ library
                        MultiParamTypeClasses,
                        FlexibleContexts,
                        FlexibleInstances,
-                       LambdaCase
+                       LambdaCase,
+                       FunctionalDependencies
   build-depends:       base >=4.8,
                        bytestring >=0.10,
                        binary >=0.7,
