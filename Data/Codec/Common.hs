@@ -47,17 +47,17 @@ import Prelude hiding (id, (.))
 -- @User@ as:
 --
 -- @
---  userCodec :: Codec ObjectParser ObjectReader User
---  userCodec = codec User
---    $   f_username      >< entry "user"
---    >>> f_userEmail     >< entry "email"
---    >>> f_userLanguages >< entry "languages"
---    >>> f_userReferrer  >< opt (entry "referrer")
+--  userCodec :: JSONCodec User
+--  userCodec = obj "user object' $ codec User
+--    $   f_username      >< "user"
+--    >>> f_userEmail     >< "email"
+--    >>> f_userLanguages >< "languages"
+--    >>> f_userReferrer  >< opt "referrer"
 -- @
 --
 -- The type system ensures that every field is provided exactly once.
 
--- | `Field`s partially apply constructors and replace an argument with this type.
+-- | `Field`s partially apply constructors and replace arguments with this type.
 data X = X
 
 -- | The class of constructor applications that have been completely filled in by composing
