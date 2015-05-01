@@ -5,7 +5,6 @@ module Data.Codec.Tar where
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
 import Data.Codec
-import Data.Codec.TH
 import Data.Word
 import Data.Binary.Get (Get)
 import Data.Binary.Put (PutM)
@@ -38,7 +37,7 @@ genFields ''Header
 -- easy peasy
 headerCodec :: Codec Get PutM Header
 headerCodec = codec Header
-  $   f_headerName              >< bytes' 100
+  $   f_headerName              >< bytes' 100 -- Codec will de/serialize in this order
   >>> f_headerMode              >< octal 8
   >>> f_headerOwnerUID          >< octal 8
   >>> f_headerOwnerGID          >< octal 8
@@ -56,7 +55,7 @@ headerCodec = codec Header
   >>> f_headerFilenamePrefix    >< bytes' 155
 
 -- byte field with trailing nulls stripped
-bytes' :: Int -> BinaryFieldCodec B.ByteString
+bytes' :: Int -> BinaryCodec B.ByteString
 bytes' n = mapCodecM trim pad (byteString n)
   where
     trim bs = return (fst $ B.spanEnd (==0) bs)
@@ -64,7 +63,8 @@ bytes' n = mapCodecM trim pad (byteString n)
       | B.length bs <= n = return $ bs `B.append` B.replicate (n - B.length bs) 0
       | otherwise = fail "Serialized ByteString too large for field."
 
-octal :: (Show i, Integral i) => Int -> BinaryFieldCodec i
+-- zero-padded null/space-terminated ASCII octal
+octal :: (Show i, Integral i) => Int -> BinaryCodec i
 octal n = mapCodecM parseOct makeOct (byteString n)
   where
     parseOct bs

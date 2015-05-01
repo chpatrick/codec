@@ -1,7 +1,10 @@
 module Data.Binary.Codec
-  ( byteString
+  (
+  -- * Binary codecs
+    BinaryCodec
+  , byteString
   , word8
-  , BinaryCodec
+  -- * Testing
   , reversible
   )
  where

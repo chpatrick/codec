@@ -1,12 +1,5 @@
-{-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, LambdaCase, TemplateHaskell #-}
+module Data.Codec (module X) where
 
-module Data.Codec 
-  ( module Data.Codec.Common
-  , module Data.Codec.TH
-  , module Data.Codec.Tuple
-  )
-where
-
-import Data.Codec.Common
-import Data.Codec.TH
-import Data.Codec.Tuple
+import Data.Codec.Common as X
+import Data.Codec.TH as X
+import Data.Codec.Tuple as X

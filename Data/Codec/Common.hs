@@ -1,4 +1,4 @@
-{-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, LambdaCase, TemplateHaskell #-}
+{-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, LambdaCase #-}
 
 module Data.Codec.Common
   ( 
@@ -9,13 +9,14 @@ module Data.Codec.Common
   -- * Constructing Codecs
   , (><), (>>>)
   , Buildable(..)
-  , Field(..)
+  , Field(..), as
   , Build(..), build, build_, codec
   , X(X)
   )
 where
 
 import Control.Applicative (Alternative(..), optional)
+import Control.Monad ((>=>))
 import Control.Category (Category(..), (>>>))
 import Prelude hiding (id, (.))
 
@@ -79,6 +80,9 @@ instance Buildable r r where
 -- @
 data Field r a x y = Field (a -> x -> y) (r -> a)
 
+as :: a -> Field r a x y -> x -> y
+as x (Field f _) = f x
+
 -- | Field application equipped with serializers and deserializers.
 data Build fr fw r x y = Build (fr (x -> y)) (r -> fw ())
 
@@ -121,7 +125,7 @@ mapCodec to from (Codec r w)
 -- the results are still complementary.
 mapCodecM :: (Monad fr, Monad fw) => (a -> fr b) -> (b -> fw a) -> Codec fr fw a -> Codec fr fw b
 mapCodecM to from (Codec r w)
-  = Codec (r >>= to) (\x -> from x >>= w)
+  = Codec (r >>= to) (from >=> w)
 
 -- | Given a `Codec` for @a@, make one for `Maybe` @a@ that applies its deserializer optionally
 -- and does nothing when serializing `Nothing`.
