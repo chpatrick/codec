@@ -6,8 +6,6 @@ import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
 import Data.Codec
 import Data.Word
-import Data.Binary.Get (Get)
-import Data.Binary.Put (PutM)
 import Data.Binary.Codec
 import Numeric
 
@@ -35,7 +33,7 @@ data Header = Header {
 genFields ''Header
 
 -- easy peasy
-headerCodec :: Codec Get PutM Header
+headerCodec :: BinaryCodec Header
 headerCodec = codec Header
   $   f_headerName              >< bytes' 100 -- Codec will de/serialize in this order
   >>> f_headerMode              >< octal 8

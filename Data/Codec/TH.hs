@@ -23,8 +23,8 @@ genFields n = reify n >>= \case
           pfns = map (\j -> mkName ("arg" ++ show j)) [1..fc] -- polymorphic field names (a1, a2..)
           pfts = map VarT pfns -- polymorphic field types
       vns <- for vs $ \case
-        PlainTV n -> return n
-        KindedTV n k | k == starK -> return n
+        PlainTV vn -> return vn
+        KindedTV vn k | k == starK -> return vn
         _ -> fail "Only simple type variables supported."
       let rt = foldl' (\t v -> AppT t (VarT v)) (ConT n) vns
       kot <- [t|X|]
