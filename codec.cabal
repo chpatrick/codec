@@ -11,11 +11,10 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     Data.Codec,
-                       Data.Codec.TH,
-                       Data.Codec.Iso
+  exposed-modules:     Data.Codec
 
-                       Data.Aeson.Codec
+                       Control.Lens.Codec,
+                       Data.Aeson.Codec,
                        Data.Binary.Codec
   -- other-modules:       
   extensions:          TemplateHaskell,

@@ -1,7 +1,7 @@
 module Data.Aeson.Codec
   (
   -- * JSON codecs
-     JSONCodec, parseJSONCodec, toJSONCodec
+     JSONCodec, def, parseJSONCodec, toJSONCodec
   -- * JSON object codecs
   -- | Object codecs have an `IsString` instance that is equivalent to `entry` `def`.
   , entry, obj

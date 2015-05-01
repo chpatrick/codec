@@ -18,11 +18,15 @@ deleteAt i xs = pr ++ suf
 -- Each record field @a@ will be turned into a `Field` @f_a@.
 genFields :: Name -> Q [ Dec ]
 genFields n = reify n >>= \case
-  TyConI (DataD [] _ [] [ RecC _ fs ] _) -> do
-      let rt = ConT n
-          fc = length fs
-          pfns = map (\j -> mkName ("a" ++ show j)) [1..fc] -- polymorphic field names (a1, a2..)
+  TyConI (DataD [] _ vs [ RecC _ fs ] _) -> do
+      let fc = length fs
+          pfns = map (\j -> mkName ("arg" ++ show j)) [1..fc] -- polymorphic field names (a1, a2..)
           pfts = map VarT pfns -- polymorphic field types
+      vns <- for vs $ \case
+        PlainTV n -> return n
+        KindedTV n k | k == starK -> return n
+        _ -> fail "Only simple type variables supported."
+      let rt = foldl' (\t v -> AppT t (VarT v)) (ConT n) vns
       kot <- [t|X|]
       fds <- for (zip [0..] fs) $ \( i, ( fn, _, ft ) ) -> do
         pfas <- for [1..fc] $ \j -> newName ("a" ++ show j) -- polymorphic field arguments
@@ -34,7 +38,7 @@ genFields n = reify n >>= \case
             applicator' c x = foldr (\pfap -> LamE [ pfap ]) (apply c x) $ replaceAt WildP i $ map VarP pfas
             applicator = [|\x c -> $(pure $ applicator' 'c 'x)|]
             extractor = VarE fn
-        fat <- ForallT (deleteAt i $ map PlainTV pfns) [] <$> [t|Field $(pure rt) $(pure ft) $(pure xt) $(pure yt) |]
+        fat <- ForallT (map PlainTV (vns ++ deleteAt i pfns)) [] <$> [t|Field $(pure rt) $(pure ft) $(pure xt) $(pure yt) |]
         body <- [|Field $(applicator) $(pure extractor)|]
         return [ SigD fan fat, ValD (VarP fan) (NormalB body) [] ]
       return $ concat fds
