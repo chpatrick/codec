@@ -17,7 +17,7 @@ library
                        Data.Aeson.Codec,
                        Data.Binary.Codec
   -- other-modules:       
-  extensions:          TemplateHaskell,
+  default-extensions:  TemplateHaskell,
                        MultiParamTypeClasses,
                        FlexibleContexts,
                        FlexibleInstances,
