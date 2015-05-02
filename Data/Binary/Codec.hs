@@ -14,11 +14,13 @@ module Data.Binary.Codec
  where
 
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Lazy as LBS
 import Data.Binary.Get
 import Data.Binary.Put
 import Data.Word
 
 import Data.Codec.Codec
+import Data.Codec.Testing
 
 type BinaryCodec a = Codec Get PutM a
 
@@ -64,8 +66,9 @@ word64host = Codec getWord64host putWord64host
 wordhost :: BinaryCodec Word
 wordhost = Codec getWordhost putWordhost
 
--- | Verify that a `BinaryCodec` is reversible for a given input.
-reversible :: Eq a => BinaryCodec a -> a -> Bool
-reversible cd x = case runGetOrFail (parse cd) (runPut (produce cd x)) of
-  Left ( _, _, _ ) -> False
-  Right ( _, _, y ) -> x == y
+toConcrete :: BinaryCodec a -> ConcreteCodec LBS.ByteString (Either String) a
+toConcrete (Codec r w) = concrete
+  (\bs -> case runGetOrFail r bs of
+    Left ( _ , _, err ) -> Left err
+    Right ( _, _, x ) -> Right x)
+  (runPut . w)

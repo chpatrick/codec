@@ -46,7 +46,8 @@ library
 
                        Control.Lens.Codec,
                        Data.Aeson.Codec,
-                       Data.Binary.Codec
+                       Data.Binary.Codec,
+                       Data.Binary.Bits.Codec
   -- other-modules:       
   default-extensions:  TemplateHaskell,
                        MultiParamTypeClasses,
@@ -58,6 +59,7 @@ library
   build-depends:       base >=4.8,
                        bytestring >=0.10,
                        binary >=0.7,
+                       binary-bits >=0.5,
                        template-haskell >=2.10,
                        mtl >= 2.2.1,
                        aeson >= 0.8.0.2,

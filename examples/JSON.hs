@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Data.Codec.JSON where
+module Data.Codec.Examples.JSON where
 
 import Data.Aeson
 import Data.Aeson.Codec
@@ -24,7 +24,7 @@ userCodec = obj "user object" $ finish User
   >>> f_userReferrer  >-< opt (entry "referrer" userCodec) -- entry with specific codec
 
 instance FromJSON User where
-  parseJSON = parseJSONCodec userCodec
+  parseJSON = produceVal userCodec
 
 instance ToJSON User where
-  toJSON = toJSONCodec userCodec
+  toJSON = parseVal userCodec

@@ -4,11 +4,13 @@ module Data.Codec.Codec
   , (>-<)
     -- * Codec combinators
   , opt, mapCodec, mapCodecM
+  , ConcreteCodec, concrete, parseVal, produceVal
   )
 where
 
+import Control.Applicative (Alternative(..), optional, Const(..))
 import Control.Monad ((>=>))
-import Control.Applicative (Alternative(..), optional)
+import Control.Monad.Reader (ReaderT(..))
 import Data.Codec.Field (Field(..), Build(..))
 
 -- | De/serializer for the given types. Usually w ~ r, but they are separate
@@ -50,3 +52,16 @@ mapCodec to from (Codec r w)
 mapCodecM :: (Monad fr, Monad fw) => (a -> fr b) -> (b -> fw a) -> Codec fr fw a -> Codec fr fw b
 mapCodecM to from (Codec r w)
   = Codec (r >>= to) (from >=> w)
+
+-- | A codec where `a` can be produced from a concrete value of `b` in context `f`,
+-- and a concrete type of value `b` can always be produced.
+type ConcreteCodec b f a = Codec (ReaderT b f) (Const b) a
+
+concrete :: (b -> f a) -> (a -> b) -> ConcreteCodec b f a
+concrete r w = Codec (ReaderT r) (Const . w)
+
+parseVal :: ConcreteCodec b f a -> b -> f a
+parseVal (Codec r _) = runReaderT r
+
+produceVal :: ConcreteCodec b f a -> a -> b
+produceVal (Codec _ w) = getConst . w
