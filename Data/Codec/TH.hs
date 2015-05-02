@@ -4,7 +4,7 @@ import Data.Foldable (foldl')
 import Data.Traversable (for)
 import Language.Haskell.TH
 
-import Data.Codec.Common
+import Data.Codec.Field
 
 replaceAt :: a -> Int -> [ a ] -> [ a ]
 replaceAt x i xs = pr ++ x : suf

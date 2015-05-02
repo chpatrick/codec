@@ -14,9 +14,9 @@ import Data.Binary.Get
 import Data.Binary.Put
 import Data.Word
 
-import Data.Codec (Codec(..))
+import Data.Codec.Codec
 
-type BinaryCodec = Codec Get PutM
+type BinaryCodec a = Codec Get PutM a
 
 -- | Get/put an n-byte field.
 byteString :: Int -> BinaryCodec BS.ByteString

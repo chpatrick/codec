@@ -1,6 +1,6 @@
 module Data.Codec.Tuple(Field1(..), Field2(..)) where
 
-import Data.Codec.Common
+import Data.Codec.Field (Field(..), X)
 
 class Field1 r a x y | r x -> y, r y -> x, r -> a, x y -> r where
   f_1 :: Field r a x y

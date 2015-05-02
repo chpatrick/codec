@@ -18,11 +18,11 @@ import Data.Default.Class
 import qualified Data.Text as T
 import Data.String
 
-import Data.Codec (Codec(..), parse, produce)
+import Data.Codec
 
 -- | JSON codec. This is just a `ToJSON`/`FromJSON` implementation wrapped up in newtypes.
 -- Use `def` to get a `JSONCodec` for a `ToJSON`/`FromJSON` instance.
-type JSONCodec = Codec (ReaderT Value Parser) (Const Value)
+type JSONCodec a = Codec (ReaderT Value Parser) (Const Value) a
 
 instance (ToJSON a, FromJSON a) => Default (JSONCodec a) where
   def = Codec (ReaderT parseJSON) (Const . toJSON)
@@ -40,7 +40,7 @@ type ObjectBuilder = Const (Endo [ Pair ])
 
 -- | A codec that parses values out of a given `Object`, and produces
 -- key-value pairs into a new one.
-type ObjectCodec = Codec ObjectParser ObjectBuilder
+type ObjectCodec a = Codec ObjectParser ObjectBuilder a
 
 -- | Produce a key-value pair.
 pair :: ToJSON a => T.Text -> a -> ObjectBuilder ()
