@@ -1,7 +1,38 @@
 name:                codec
-version:             0.1.0.0
--- synopsis:            
--- description:         
+version:             0.0.1
+synopsis:            First-class record construction and bidirectional serialization
+description:
+  Easy bidirectional serialization in any Applicative context.
+  Serialization can occur in any field order and the type system
+  ensures that every field is provided once.
+  .
+  @
+  data User = User
+  &#x20; &#123; username :: Text
+  &#x20; , userEmail :: Text
+  &#x20; , userLanguages :: [ Text ]
+  &#x20; , userReferrer :: Maybe User
+  &#125; deriving Show
+  .
+  genFields ''User
+  .
+  userCodec :: JSONCodec User
+  userCodec = obj "user object" $ finish User
+  &#x20; $   f_username      >-< "user" -- entry with FromJSON/ToJSON serialization
+  &#x20; >>> f_userEmail     >-< "email"
+  &#x20; >>> f_userLanguages >-< "languages"
+  &#x20; >>> f_userReferrer  >-< opt (entry "referrer" userCodec) -- entry with specific codec
+  .
+  instance FromJSON User where
+  &#x20; parseJSON = parseJSONCodec userCodec
+  .
+  instance ToJSON User where
+  &#x20; toJSON = toJSONCodec userCodec
+  @
+  .
+  See "Data.Codec" for an introduction.
+license:             MIT
+license-file:        LICENSE
 author:              Patrick Chilton
 maintainer:          chpatrick@gmail.com
 -- copyright:           
@@ -22,7 +53,8 @@ library
                        FlexibleContexts,
                        FlexibleInstances,
                        LambdaCase,
-                       FunctionalDependencies
+                       FunctionalDependencies,
+                       DeriveFunctor
   build-depends:       base >=4.8,
                        bytestring >=0.10,
                        binary >=0.7,
