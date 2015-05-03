@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module Data.Codec.Examples.Tar where
+module Examples.Tar where
 
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC

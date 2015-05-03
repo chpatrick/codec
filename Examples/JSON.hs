@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Data.Codec.Examples.JSON where
+module Examples.JSON where
 
 import Data.Aeson
 import Data.Aeson.Codec

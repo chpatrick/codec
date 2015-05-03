@@ -1,4 +1,4 @@
-module Data.Codec.Examples.IP where
+module Examples.IP where
 
 import Data.Codec
 import Data.Binary.Bits.Codec

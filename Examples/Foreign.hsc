@@ -1,4 +1,4 @@
-module Data.Codec.Examples.Foreign where
+module Examples.Foreign where
 
 #include "time.h"
 

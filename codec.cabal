@@ -66,7 +66,7 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     Data.Codec,
-                       Data.Codec.Testing
+                       Data.Codec.Testing,
 
                        Control.Lens.Codec,
                        Data.Aeson.Codec,
@@ -95,3 +95,25 @@ library
   -- hs-source-dirs:      
   default-language:    Haskell2010
   ghc-options:         -Wall -O2 -fno-warn-orphans
+
+test-suite Examples
+  default-language:    Haskell2010
+  type:                exitcode-stdio-1.0
+  main-is:             TestExamples.hs
+  build-depends:       base >=4.8,
+                       bytestring >=0.10,
+                       binary >=0.7,
+                       binary-bits >=0.5,
+                       template-haskell >=2.10,
+                       mtl >= 2.2.1,
+                       aeson >= 0.8.0.2,
+                       text >= 1.2.0.4,
+                       unordered-containers >= 0.2.5.1,
+                       data-default-class >= 0.0.1,
+                       transformers >= 0.4.2.0
+  default-extensions:  TemplateHaskell,
+                       MultiParamTypeClasses,
+                       FlexibleInstances,
+                       DeriveFunctor,
+                       FunctionalDependencies,
+                       LambdaCase
