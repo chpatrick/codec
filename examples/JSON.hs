@@ -17,7 +17,7 @@ data User = User
 genFields ''User
 
 userCodec :: JSONCodec User
-userCodec = obj "user object" $ finish User
+userCodec = obj "user object" $ build User
   $   f_username      >-< "user" -- entry with FromJSON/ToJSON serialization
   >>> f_userEmail     >-< "email"
   >>> f_userLanguages >-< "languages"

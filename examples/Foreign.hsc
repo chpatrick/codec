@@ -16,7 +16,7 @@ data TimeSpec = TimeSpec
 genFields ''TimeSpec
 
 timeSpecCodec :: ForeignCodec TimeSpec
-timeSpecCodec = finish TimeSpec
+timeSpecCodec = build TimeSpec
   $   f_seconds     >-< field (#offset struct timespec, tv_sec)
   >>> f_nanoseconds >-< field (#offset struct timespec, tv_nsec)
 

@@ -5,7 +5,7 @@ module Data.Codec.Field
   , Build(..)
   , (>>>)
   , X(X), Buildable(..)
-  , having, finish
+  , having, build
   ) where
 
 import Control.Category
@@ -49,6 +49,6 @@ instance Applicative f => Category (Build r f) where
     = Build ((>>>) <$> g <*> f)
 
 -- | Finish a construction given a constructor.
-finish :: (Functor f, Buildable r y) => x -> Build r f x y -> f r
-finish x (Build b)
+build :: (Functor f, Buildable r y) => x -> Build r f x y -> f r
+build x (Build b)
   = (\f -> give $ f x) <$> b

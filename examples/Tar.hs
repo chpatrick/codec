@@ -34,7 +34,7 @@ genFields ''Header
 
 -- easy peasy
 headerCodec :: BinaryCodec Header
-headerCodec = finish Header
+headerCodec = build Header
   $   f_headerName              >-< bytes' 100 -- Codec will de/serialize in this order
   >>> f_headerMode              >-< octal 8
   >>> f_headerOwnerUID          >-< octal 8

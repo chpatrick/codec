@@ -23,7 +23,7 @@ data IPv4 = IPv4
 genFields ''IPv4
 
 ipv4Codec :: BitCodec IPv4
-ipv4Codec = finish IPv4
+ipv4Codec = build IPv4
   $   f_version         >-< word8 4
   >>> f_ihl             >-< word8 4
   >>> f_dscp            >-< word8 6

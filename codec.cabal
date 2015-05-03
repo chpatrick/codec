@@ -10,7 +10,7 @@ description:
   .
   @
   userCodec :: JSONCodec User
-  userCodec = obj "user object" $ finish User
+  userCodec = obj "user object" $ build User
   &#x20; $   f_username      >-< "user"
   &#x20; >>> f_userEmail     >-< "email"
   &#x20; >>> f_userLanguages >-< "languages"
@@ -27,7 +27,7 @@ description:
   .
   @
   ipv4Codec :: BitCodec IPv4
-  ipv4Codec = finish IPv4
+  ipv4Codec = build IPv4
   &#x20; $   f_version         >-< word8 4
   &#x20; >>> f_ihl             >-< word8 4
   &#x20; >>> f_dscp            >-< word8 6
@@ -47,7 +47,7 @@ description:
   .
   @
   timeSpecCodec :: ForeignCodec TimeSpec
-  timeSpecCodec = finish TimeSpec
+  timeSpecCodec = build TimeSpec
   &#x20; $   f_seconds     >-< field (#offset struct timespec, tv_sec)
   &#x20; >>> f_nanoseconds >-< field (#offset struct timespec, tv_nsec)
   .
