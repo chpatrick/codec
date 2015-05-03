@@ -90,7 +90,8 @@ library
                        aeson >= 0.8.0.2,
                        text >= 1.2.0.4,
                        unordered-containers >= 0.2.5.1,
-                       data-default-class >= 0.0.1
+                       data-default-class >= 0.0.1,
+                       transformers >= 0.4.2.0
   -- hs-source-dirs:      
   default-language:    Haskell2010
   ghc-options:         -Wall -O2 -fno-warn-orphans

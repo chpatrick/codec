@@ -24,7 +24,7 @@ userCodec = obj "user object" $ build User
   >>> f_userReferrer  >-< opt (entry "referrer" userCodec) -- entry with specific codec
 
 instance FromJSON User where
-  parseJSON = produceVal userCodec
+  parseJSON = parseVal userCodec
 
 instance ToJSON User where
-  toJSON = parseVal userCodec
+  toJSON = produceVal userCodec

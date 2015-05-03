@@ -4,6 +4,10 @@ module Data.Codec.Codec
   , (>-<)
     -- * Concrete codecs
   , ConcreteCodec, concrete, parseVal, produceVal
+    -- * Partial codecs
+    -- | Partial codecs are useful for creating codecs
+    -- for types with multiple constructors. See @examples/Multi.hs@.
+  , PartialCodec, cbuild, assume, covered, (<->), produceMaybe
     -- * Codec combinators
   , opt, mapCodec, mapCodecM
   )
@@ -12,7 +16,9 @@ where
 import Control.Applicative (Alternative(..), optional, Const(..))
 import Control.Monad ((>=>))
 import Control.Monad.Reader (ReaderT(..))
-import Data.Codec.Field (Field(..), Build(..))
+import Data.Codec.Field
+import Data.Functor.Compose
+import Data.Maybe (fromMaybe)
 
 -- | De/serializer for the given types. Usually w ~ r, but they are separate
 -- to allow for an `Applicative` instance.
@@ -69,3 +75,36 @@ parseVal (Codec r _) = runReaderT r
 -- | Produce a concrete value with a given `ConcreteCodec`.
 produceVal :: ConcreteCodec b f a -> a -> b
 produceVal (Codec _ w) = getConst . w
+
+-- | A codec that can only serialize a subset of values.
+type PartialCodec fr fw a = Codec fr (Compose Maybe fw) a
+
+-- | Finish a codec construction with a @`Con` r@ to produce a `PartialCodec`.
+-- This will check that the given record has the appropriate constructor
+-- before serializing.
+cbuild :: (Functor fr, Buildable r y)
+  => Con r x -> Build r (Codec' fr fw r) x y -> PartialCodec fr fw r
+cbuild (Con c p) = assume p . build c
+
+-- | Guard a `Codec` with a predicate to create a `PartialCodec`.
+assume :: (a -> Bool) -> Codec fr fw a -> PartialCodec fr fw a
+assume p (Codec r w)
+  = Codec r (\x -> Compose $ if p x then Just (w x) else Nothing)
+
+-- | Convert a `PartialCodec` into a `Codec`, throwing an error
+-- on values it cannot serialize.
+covered :: PartialCodec fr fw a -> Codec fr fw a
+covered cd
+  = Codec (parse cd) (fromMaybe (error "Could not serialize value.") . produceMaybe cd)
+
+-- | Combine alternative `PartialCodec`s.
+(<->) :: Alternative fr => PartialCodec fr fw a -> PartialCodec fr fw a -> PartialCodec fr fw a
+cd <-> acd = Codec
+  { parse = parse cd <|> parse acd
+  , produce = \x -> Compose $ produceMaybe cd x <|> produceMaybe acd x
+}
+
+-- | Attempt to get a serialization for a given value.
+produceMaybe :: PartialCodec fr fw a -> a -> Maybe (fw ())
+produceMaybe (Codec _ w) x
+  = getCompose (w x)

@@ -3,7 +3,8 @@ module Data.Codec.Field
   -- * First-class record construction
     Field(..)
   , Build(..)
-  , (>>>)
+  , Con(..)
+  , (>>>), done
   , X(X), Buildable(..)
   , having, build
   ) where
@@ -43,6 +44,10 @@ newtype Build r f x y = Build (f (x -> y))
 having :: Functor f => Field r a x y -> f a -> Build r f x y
 having (Field c _) p = Build (c <$> p)
 
+-- | No-op `Build` (same as `id`).
+done :: Applicative f => Build r f x x
+done = id
+
 instance Applicative f => Category (Build r f) where
   id = Build (pure id)
   Build f . Build g
@@ -52,3 +57,6 @@ instance Applicative f => Category (Build r f) where
 build :: (Functor f, Buildable r y) => x -> Build r f x y -> f r
 build x (Build b)
   = (\f -> give $ f x) <$> b
+
+-- | A constructor for a given record and a way to check whether it has it.
+data Con r x = Con x (r -> Bool)
