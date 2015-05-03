@@ -2,9 +2,10 @@ module Data.Codec.Codec
   ( -- * Codecs
     Codec'(..), Codec
   , (>-<)
+    -- * Concrete codecs
+  , ConcreteCodec, concrete, parseVal, produceVal
     -- * Codec combinators
   , opt, mapCodec, mapCodecM
-  , ConcreteCodec, concrete, parseVal, produceVal
   )
 where
 
@@ -57,11 +58,14 @@ mapCodecM to from (Codec r w)
 -- and a concrete type of value `b` can always be produced.
 type ConcreteCodec b f a = Codec (ReaderT b f) (Const b) a
 
+-- | Create a concrete codec from a reader and a writer.
 concrete :: (b -> f a) -> (a -> b) -> ConcreteCodec b f a
 concrete r w = Codec (ReaderT r) (Const . w)
 
+-- | Parse a concrete value with a given `ConcreteCodec`.
 parseVal :: ConcreteCodec b f a -> b -> f a
 parseVal (Codec r _) = runReaderT r
 
+-- | Produce a concrete value with a given `ConcreteCodec`.
 produceVal :: ConcreteCodec b f a -> a -> b
 produceVal (Codec _ w) = getConst . w

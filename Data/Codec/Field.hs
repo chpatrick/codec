@@ -36,7 +36,7 @@ data Field r a x y = Field (a -> x -> y) (r -> a)
 
 -- Static (Backwards f) + phantom parameter
 -- | An ongoing record construction of an @r@ in context @f@.
--- Applicative Actions are sequenced in the direction of `>>>`.
+-- Applicative actions are sequenced in the direction of `>>>`.
 newtype Build r f x y = Build (f (x -> y))
 
 -- | Combine a `Field` and a way to produce an @a@ to get a `Build`.

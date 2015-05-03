@@ -3,8 +3,8 @@ module Data.Aeson.Codec
   -- * JSON codecs
      JSONCodec
   -- * JSON object codecs
-  , entry, pair, obj
   , ObjectParser, ObjectBuilder, ObjectCodec
+  , entry, pair, obj
   ) where
 
 import Control.Applicative

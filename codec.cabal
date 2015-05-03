@@ -18,16 +18,16 @@ description:
   .
   userCodec :: JSONCodec User
   userCodec = obj "user object" $ finish User
-  &#x20; $   f_username      >-< "user" -- entry with FromJSON/ToJSON serialization
+  &#x20; $   f_username      >-< "user"
   &#x20; >>> f_userEmail     >-< "email"
   &#x20; >>> f_userLanguages >-< "languages"
-  &#x20; >>> f_userReferrer  >-< opt (entry "referrer" userCodec) -- entry with specific codec
+  &#x20; >>> f_userReferrer  >-< opt "referrer"
   .
   instance FromJSON User where
-  &#x20; parseJSON = parseJSONCodec userCodec
+  &#x20; parseJSON = parseVal userCodec
   .
   instance ToJSON User where
-  &#x20; toJSON = toJSONCodec userCodec
+  &#x20; toJSON = produceVal userCodec
   @
   .
   See "Data.Codec" for an introduction.
@@ -42,7 +42,8 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     Data.Codec
+  exposed-modules:     Data.Codec,
+                       Data.Codec.Testing
 
                        Control.Lens.Codec,
                        Data.Aeson.Codec,

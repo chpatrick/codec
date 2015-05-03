@@ -3,13 +3,12 @@ module Data.Binary.Codec
   -- * Binary codecs
     BinaryCodec
   , byteString
+  , toLazyByteString
   , word8
   , word16be, word16le, word16host
   , word32be, word32le, word32host
   , word64be, word64le, word64host
   , wordhost
-  -- * Testing
-  , reversible
   )
  where
 
@@ -20,7 +19,6 @@ import Data.Binary.Put
 import Data.Word
 
 import Data.Codec.Codec
-import Data.Codec.Testing
 
 type BinaryCodec a = Codec Get PutM a
 
@@ -66,8 +64,9 @@ word64host = Codec getWord64host putWord64host
 wordhost :: BinaryCodec Word
 wordhost = Codec getWordhost putWordhost
 
-toConcrete :: BinaryCodec a -> ConcreteCodec LBS.ByteString (Either String) a
-toConcrete (Codec r w) = concrete
+-- | Convert a `BinaryCodec` into a `ConcreteCodec` on lazy `LBS.ByteString`s.
+toLazyByteString :: BinaryCodec a -> ConcreteCodec LBS.ByteString (Either String) a
+toLazyByteString (Codec r w) = concrete
   (\bs -> case runGetOrFail r bs of
     Left ( _ , _, err ) -> Left err
     Right ( _, _, x ) -> Right x)
