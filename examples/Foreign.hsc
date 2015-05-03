@@ -23,5 +23,5 @@ timeSpecCodec = build TimeSpec
 instance Storable TimeSpec where
   sizeOf _ = #{size struct timespec}
   alignment _ = #{alignment struct timespec}
-  peek = peekCodec timeSpecCodec
-  poke = pokeCodec timeSpecCodec
+  peek = peekWith timeSpecCodec
+  poke = pokeWith timeSpecCodec

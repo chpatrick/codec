@@ -52,8 +52,8 @@ description:
   &#x20; >>> f_nanoseconds >-< field (#offset struct timespec, tv_nsec)
   .
   instance Storable TimeSpec where
-  &#x20; peek = peekCodec timeSpecCodec
-  &#x20; poke = pokeCodec timeSpecCodec
+  &#x20; peek = peekWith timeSpecCodec
+  &#x20; poke = pokeWith timeSpecCodec
   @
   See "Data.Codec" for an introduction.
 author:              Patrick Chilton
