@@ -11,7 +11,7 @@ import Data.Codec.Codec
 type ForeignContext a = ReaderT (Ptr a) IO
 -- | A foreign codec for @a@ given a pointer to @p@.
 type ForeignCodec' p a = Codec (ForeignContext p) (ForeignContext p) a
--- | A foreign pointer for @a@ given a pointer to itself.
+-- | A foreign codec for @a@ given a pointer to itself.
 type ForeignCodec a = ForeignCodec' a a
 
 -- | Peek a value using a `ForeignCodec'`.
@@ -19,7 +19,7 @@ peekCodec :: ForeignCodec' p a -> Ptr p -> IO a
 peekCodec (Codec r _)
   = runReaderT r
 
--- | Poke a value using a `ForeignCodec`.
+-- | Poke a value using a `ForeignCodec'`.
 pokeCodec :: ForeignCodec' p a -> Ptr p -> a -> IO ()
 pokeCodec (Codec _ w) ptr x
   = runReaderT (w x) ptr
