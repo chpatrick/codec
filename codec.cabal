@@ -2,20 +2,13 @@ name:                codec
 version:             0.0.1
 synopsis:            First-class record construction and bidirectional serialization
 description:
-  Easy bidirectional serialization in any Applicative context.
+  Easy bidirectional serialization of plain Haskell types in any Applicative context.
   Serialization can occur in any field order and the type system
   ensures that every field is provided once.
   .
+  JSON!
+  .
   @
-  data User = User
-  &#x20; &#123; username :: Text
-  &#x20; , userEmail :: Text
-  &#x20; , userLanguages :: [ Text ]
-  &#x20; , userReferrer :: Maybe User
-  &#125; deriving Show
-  .
-  genFields ''User
-  .
   userCodec :: JSONCodec User
   userCodec = obj "user object" $ finish User
   &#x20; $   f_username      >-< "user"
@@ -29,6 +22,8 @@ description:
   instance ToJSON User where
   &#x20; toJSON = produceVal userCodec
   @
+  .
+  Bit fields!
   .
   @
   ipv4Codec :: BitCodec IPv4
@@ -48,9 +43,19 @@ description:
   &#x20; >>> f_destIP          >-< word32be 32
   @
   .
+  Storable!
+  .
+  @
+  timeSpecCodec :: ForeignCodec TimeSpec
+  timeSpecCodec = finish TimeSpec
+  &#x20; $   f_seconds     >-< field (#offset struct timespec, tv_sec)
+  &#x20; >>> f_nanoseconds >-< field (#offset struct timespec, tv_nsec)
+  .
+  instance Storable TimeSpec where
+  &#x20; peek = peekCodec timeSpecCodec
+  &#x20; poke = pokeCodec timeSpecCodec
+  @
   See "Data.Codec" for an introduction.
-license:             MIT
-license-file:        LICENSE
 author:              Patrick Chilton
 maintainer:          chpatrick@gmail.com
 -- copyright:           
@@ -66,7 +71,8 @@ library
                        Control.Lens.Codec,
                        Data.Aeson.Codec,
                        Data.Binary.Codec,
-                       Data.Binary.Bits.Codec
+                       Data.Binary.Bits.Codec,
+                       Foreign.Codec
   -- other-modules:       
   default-extensions:  TemplateHaskell,
                        MultiParamTypeClasses,
