@@ -48,8 +48,8 @@ description:
   @
   timeSpecCodec :: ForeignCodec TimeSpec
   timeSpecCodec = build TimeSpec
-  &#x20; $   f_seconds     >-< field (#offset struct timespec, tv_sec)
-  &#x20; >>> f_nanoseconds >-< field (#offset struct timespec, tv_nsec)
+  &#x20; $   f_seconds     >-< field (#offset struct timespec, tv_sec)  cInt
+  &#x20; >>> f_nanoseconds >-< field (#offset struct timespec, tv_nsec) cInt
   .
   instance Storable TimeSpec where
   &#x20; peek = peekWith timeSpecCodec
@@ -80,7 +80,8 @@ library
                        FlexibleInstances,
                        LambdaCase,
                        FunctionalDependencies,
-                       DeriveFunctor
+                       DeriveFunctor,
+                       ScopedTypeVariables
   build-depends:       base >=4.8,
                        bytestring >=0.10,
                        binary >=0.7,
@@ -116,4 +117,5 @@ test-suite Examples
                        FlexibleInstances,
                        DeriveFunctor,
                        FunctionalDependencies,
-                       LambdaCase
+                       LambdaCase,
+                       ScopedTypeVariables

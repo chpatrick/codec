@@ -1,12 +1,13 @@
 module Foreign.Codec
   ( -- * Foreign codecs
   ForeignContext, ForeignCodec, ForeignCodec'
-  , peekWith, pokeWith, fieldWith, field
+  , peekWith, pokeWith, storable, field
+  , cNum, cInt, cBool
   ) where
 
 import Control.Monad.Reader
-import Data.Default.Class
 import Foreign
+import Foreign.C
 
 import Data.Codec.Codec
 
@@ -27,17 +28,24 @@ pokeWith :: ForeignCodec' p a -> Ptr p -> a -> IO ()
 pokeWith (Codec _ w) ptr x
   = runReaderT (w x) ptr
 
-instance Storable a => Default (ForeignCodec a) where
-  def = Codec (ReaderT peek) (\x -> ReaderT (`poke`x))
-
 -- | A codec for a field of a foreign structure, given its byte offset and a sub-codec.
 -- You can get an offset easily using @{#offset struct_type, field}@ with @hsc2hs@.
-fieldWith :: ForeignCodec a -> Int -> ForeignCodec' p a
-fieldWith cd off = Codec
+field :: Int -> ForeignCodec' f a -> ForeignCodec' p a
+field off cd = Codec
   { parse = inField $ parse cd
   , produce = inField . produce cd
   } where inField = withReaderT (`plusPtr` off)
 
--- | A codec for a field of a foreign structure, using the field's `Storable` instance.
-field :: Storable a => Int -> ForeignCodec' p a
-field = fieldWith def
+-- | A `ForeignCodec` for any `Storable` type.
+storable :: Storable a => ForeignCodec a
+storable = Codec (ReaderT peek) (\x -> ReaderT (`poke`x))
+
+-- | Store any integral type.
+cNum :: (Integral c, Storable c, Integral a) => ForeignCodec' c a
+cNum = mapCodec fromIntegral fromIntegral storable
+
+cInt :: Integral a => ForeignCodec' CInt a
+cInt = cNum
+
+cBool :: ForeignCodec Bool
+cBool = storable
