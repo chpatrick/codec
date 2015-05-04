@@ -2,12 +2,12 @@ module Foreign.Codec
   ( -- * Foreign codecs
   ForeignContext, ForeignCodec, ForeignCodec'
   , peekWith, pokeWith, storable, field
-  , cNum, cInt, cBool
+  , cast, cBool
+  , codecFor
   ) where
 
 import Control.Monad.Reader
 import Foreign
-import Foreign.C
 
 import Data.Codec.Codec
 
@@ -40,12 +40,18 @@ field off cd = Codec
 storable :: Storable a => ForeignCodec a
 storable = Codec (ReaderT peek) (\x -> ReaderT (`poke`x))
 
+castContext :: ForeignCodec' c a -> ForeignCodec' c' a
+castContext = mapCodecF castc castc
+  where castc = withReaderT castPtr
+
 -- | Store any integral type.
-cNum :: (Integral c, Storable c, Integral a) => ForeignCodec' c a
-cNum = mapCodec fromIntegral fromIntegral storable
+cast :: (Integral c, Storable c, Integral a) => ForeignCodec' c a
+cast = mapCodec fromIntegral fromIntegral storable
 
-cInt :: Integral a => ForeignCodec' CInt a
-cInt = cNum
+-- | Store a `Bool` in any `Integral` `Ptr`.
+cBool :: Integral c => ForeignCodec' c Bool
+cBool = castContext storable
 
-cBool :: ForeignCodec Bool
-cBool = storable
+-- | Restrict the pointer type of a given codec. Utility function for the @numField@ macro.
+codecFor :: c -> ForeignCodec' c a -> ForeignCodec' c a
+codecFor _ = id

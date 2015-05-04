@@ -23,17 +23,23 @@ data TM = TM
 
 genFields ''TM
 
+-- convenience macro that enforces the correct codec type for a field
+#define hsc_numField(s, f) \
+  hsc_printf("field (%ld) . codecFor (undefined :: ", offsetof(s, f)); \
+  hsc_type(typeof(((s*)0)->f)); \
+  hsc_printf(")");
+
 cTimeCodec :: ForeignCodec TM
 cTimeCodec = build TM
-  $   f_seconds            >-< field (#offset struct tm, tm_sec)   cInt
-  >>> f_minutes            >-< field (#offset struct tm, tm_min)   cInt
-  >>> f_hours              >-< field (#offset struct tm, tm_hour)  cInt
-  >>> f_monthDay           >-< field (#offset struct tm, tm_mday)  cInt
-  >>> f_month              >-< field (#offset struct tm, tm_mon)   cInt
-  >>> f_year               >-< field (#offset struct tm, tm_year)  cInt
-  >>> f_weekDay            >-< field (#offset struct tm, tm_wday)  cInt
-  >>> f_yearDay            >-< field (#offset struct tm, tm_yday)  cInt
-  >>> f_daylightSavingTime >-< field (#offset struct tm, tm_isdst) cBool
+  $   f_seconds            >-< (#numField struct tm, tm_sec)  cast
+  >>> f_minutes            >-< (#numField struct tm, tm_min)  cast
+  >>> f_hours              >-< (#numField struct tm, tm_hour) cast
+  >>> f_monthDay           >-< (#numField struct tm, tm_mday) cast
+  >>> f_month              >-< (#numField struct tm, tm_mon)  cast
+  >>> f_year               >-< (#numField struct tm, tm_year) cast
+  >>> f_weekDay            >-< (#numField struct tm, tm_wday) cast
+  >>> f_yearDay            >-< (#numField struct tm, tm_yday) cast
+  >>> f_daylightSavingTime >-< (#numField struct tm, tm_yday) cBool
 
 instance Storable TM where
   sizeOf _ = #{size struct tm}
@@ -47,7 +53,7 @@ foreign import ccall "time.h strftime" strftime
 formatTM :: String -> TM -> IO String
 formatTM fmt tm
   = allocaBytes maxSize $ \str -> do
-      withCString fmt $ \cfmt ->
+      _ <- withCString fmt $ \cfmt ->
         with tm $ \tmp ->
           strftime str (fromIntegral maxSize) cfmt tmp
       peekCString str

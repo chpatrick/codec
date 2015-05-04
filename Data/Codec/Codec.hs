@@ -9,7 +9,7 @@ module Data.Codec.Codec
     -- for types with multiple constructors. See @examples/Multi.hs@.
   , PartialCodec, cbuild, assume, covered, (<->), produceMaybe
     -- * Codec combinators
-  , opt, mapCodec, mapCodecM
+  , opt, mapCodec, mapCodecF, mapCodecM
   )
 where
 
@@ -59,6 +59,11 @@ mapCodec to from (Codec r w)
 mapCodecM :: (Monad fr, Monad fw) => (a -> fr b) -> (b -> fw a) -> Codec fr fw a -> Codec fr fw b
 mapCodecM to from (Codec r w)
   = Codec (r >>= to) (from >=> w)
+
+-- | Map the contexts of a given `Codec`.
+mapCodecF :: (fr a -> gr a) -> (fw () -> gw ()) -> Codec fr fw a -> Codec gr gw a
+mapCodecF fr fw (Codec r w)
+  = Codec (fr r) (fw . w)
 
 -- | A codec where `a` can be produced from a concrete value of `b` in context `f`,
 -- and a concrete type of value `b` can always be produced.

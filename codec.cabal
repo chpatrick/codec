@@ -101,6 +101,11 @@ test-suite Examples
   default-language:    Haskell2010
   type:                exitcode-stdio-1.0
   main-is:             TestExamples.hs
+  other-modules:       Examples.Foreign,
+                       Examples.IP,
+                       Examples.JSON,
+                       Examples.Multi,
+                       Examples.Tar
   build-depends:       base >=4.8,
                        bytestring >=0.10,
                        binary >=0.7,
