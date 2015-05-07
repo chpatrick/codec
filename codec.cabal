@@ -10,11 +10,12 @@ description:
   .
   @
   userCodec :: JSONCodec User
-  userCodec = obj "user object" $ build User
-  &#x20; $   f_username      >-< "user"
-  &#x20; >>> f_userEmail     >-< "email"
-  &#x20; >>> f_userLanguages >-< "languages"
-  &#x20; >>> f_userReferrer  >-< opt "referrer"
+  userCodec = obj "user object" $
+  &#x20; User
+  &#x20;   $>> f_username      >-< "user"
+  &#x20;   >>> f_userEmail     >-< "email"
+  &#x20;   >>> f_userLanguages >-< "languages"
+  &#x20;   >>> f_userReferrer  >-< opt "referrer"
   .
   instance FromJSON User where
   &#x20; parseJSON = parseVal userCodec
@@ -27,29 +28,31 @@ description:
   .
   @
   ipv4Codec :: BitCodec IPv4
-  ipv4Codec = build IPv4
-  &#x20; $   f_version         >-< word8 4
-  &#x20; >>> f_ihl             >-< word8 4
-  &#x20; >>> f_dscp            >-< word8 6
-  &#x20; >>> f_ecn             >-< word8 2
-  &#x20; >>> f_totalLength     >-< word16be 16
-  &#x20; >>> f_identification  >-< word16be 16
-  &#x20; >>> f_flags           >-< word8 3
-  &#x20; >>> f_fragmentOffset  >-< word16be 13
-  &#x20; >>> f_timeToLive      >-< word8 8
-  &#x20; >>> f_protocol        >-< word8 8
-  &#x20; >>> f_headerChecksum  >-< word16be 16
-  &#x20; >>> f_sourceIP        >-< word32be 32
-  &#x20; >>> f_destIP          >-< word32be 32
+  ipv4Codec =
+  &#x20; IPv4
+  &#x20;   $>> f_version         >-< word8 4
+  &#x20;   >>> f_ihl             >-< word8 4
+  &#x20;   >>> f_dscp            >-< word8 6
+  &#x20;   >>> f_ecn             >-< word8 2
+  &#x20;   >>> f_totalLength     >-< word16be 16
+  &#x20;   >>> f_identification  >-< word16be 16
+  &#x20;   >>> f_flags           >-< word8 3
+  &#x20;   >>> f_fragmentOffset  >-< word16be 13
+  &#x20;   >>> f_timeToLive      >-< word8 8
+  &#x20;   >>> f_protocol        >-< word8 8
+  &#x20;   >>> f_headerChecksum  >-< word16be 16
+  &#x20;   >>> f_sourceIP        >-< word32be 32
+  &#x20;   >>> f_destIP          >-< word32be 32
   @
   .
   Storable!
   .
   @
   timeSpecCodec :: ForeignCodec TimeSpec
-  timeSpecCodec = build TimeSpec
-  &#x20; $   f_seconds     >-< field (#offset struct timespec, tv_sec)  cInt
-  &#x20; >>> f_nanoseconds >-< field (#offset struct timespec, tv_nsec) cInt
+  timeSpecCodec =
+  &#x20; TimeSpec
+  &#x20;   $>> f_seconds     >-< field (#offset struct timespec, tv_sec)  cInt
+  &#x20;   >>> f_nanoseconds >-< field (#offset struct timespec, tv_nsec) cInt
   .
   instance Storable TimeSpec where
   &#x20; peek = peekWith timeSpecCodec

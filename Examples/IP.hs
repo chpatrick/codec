@@ -23,17 +23,18 @@ data IPv4 = IPv4
 genFields ''IPv4
 
 ipv4Codec :: BitCodec IPv4
-ipv4Codec = build IPv4
-  $   f_version        >-< word8 4
-  >>> f_ihl            >-< word8 4
-  >>> f_dscp           >-< word8 6
-  >>> f_ecn            >-< word8 2
-  >>> f_totalLength    >-< word16be 16
-  >>> f_identification >-< word16be 16
-  >>> f_flags          >-< word8 3
-  >>> f_fragmentOffset >-< word16be 13
-  >>> f_timeToLive     >-< word8 8
-  >>> f_protocol       >-< word8 8
-  >>> f_headerChecksum >-< word16be 16
-  >>> f_sourceIP       >-< word32be 32
-  >>> f_destIP         >-< word32be 32
+ipv4Codec = 
+  IPv4
+    $>> f_version        >-< word8 4
+    >>> f_ihl            >-< word8 4
+    >>> f_dscp           >-< word8 6
+    >>> f_ecn            >-< word8 2
+    >>> f_totalLength    >-< word16be 16
+    >>> f_identification >-< word16be 16
+    >>> f_flags          >-< word8 3
+    >>> f_fragmentOffset >-< word16be 13
+    >>> f_timeToLive     >-< word8 8
+    >>> f_protocol       >-< word8 8
+    >>> f_headerChecksum >-< word16be 16
+    >>> f_sourceIP       >-< word32be 32
+    >>> f_destIP         >-< word32be 32

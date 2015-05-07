@@ -30,16 +30,17 @@ genFields ''TM
   hsc_printf(")");
 
 cTimeCodec :: ForeignCodec TM
-cTimeCodec = build TM
-  $   f_seconds            >-< (#numField struct tm, tm_sec)  cast
-  >>> f_minutes            >-< (#numField struct tm, tm_min)  cast
-  >>> f_hours              >-< (#numField struct tm, tm_hour) cast
-  >>> f_monthDay           >-< (#numField struct tm, tm_mday) cast
-  >>> f_month              >-< (#numField struct tm, tm_mon)  cast
-  >>> f_year               >-< (#numField struct tm, tm_year) cast
-  >>> f_weekDay            >-< (#numField struct tm, tm_wday) cast
-  >>> f_yearDay            >-< (#numField struct tm, tm_yday) cast
-  >>> f_daylightSavingTime >-< (#numField struct tm, tm_yday) cBool
+cTimeCodec =
+  TM
+    $>> f_seconds            >-< (#numField struct tm, tm_sec)  cast
+    >>> f_minutes            >-< (#numField struct tm, tm_min)  cast
+    >>> f_hours              >-< (#numField struct tm, tm_hour) cast
+    >>> f_monthDay           >-< (#numField struct tm, tm_mday) cast
+    >>> f_month              >-< (#numField struct tm, tm_mon)  cast
+    >>> f_year               >-< (#numField struct tm, tm_year) cast
+    >>> f_weekDay            >-< (#numField struct tm, tm_wday) cast
+    >>> f_yearDay            >-< (#numField struct tm, tm_yday) cast
+    >>> f_daylightSavingTime >-< (#numField struct tm, tm_yday) cBool
 
 instance Storable TM where
   sizeOf _ = #{size struct tm}

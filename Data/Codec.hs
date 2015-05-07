@@ -39,11 +39,12 @@ import Data.Codec.Tuple
 --
 -- @
 --  userCodec :: JSONCodec User
---  userCodec = obj "user object' $ build User
---    $   f_username      >-< "user"
---    >>> f_userEmail     >-< "email"
---    >>> f_userLanguages >-< "languages"
---    >>> f_userReferrer  >-< opt "referrer"
+--  userCodec = obj "user object' $
+--    User
+--      $>> f_username      >-< "user"
+--      >>> f_userEmail     >-< "email"
+--      >>> f_userLanguages >-< "languages"
+--      >>> f_userReferrer  >-< opt "referrer"
 -- @
 --
 -- The type system ensures that every field is provided exactly once.

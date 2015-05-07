@@ -34,23 +34,24 @@ genFields ''Header
 
 -- easy peasy
 headerCodec :: BinaryCodec Header
-headerCodec = build Header
-  $   f_headerName              >-< bytes' 100 -- Codec will de/serialize in this order
-  >>> f_headerMode              >-< octal 8
-  >>> f_headerOwnerUID          >-< octal 8
-  >>> f_headerOwnerGID          >-< octal 8
-  >>> f_headerFileSize          >-< octal 12
-  >>> f_headerModifyTime        >-< octal 12
-  >>> f_headerChecksum          >-< octal 8
-  >>> f_headerType              >-< word8
-  >>> f_headerLinkName          >-< bytes' 100
-  >>> f_headerMagic             >-< bytes' 6
-  >>> f_headerVersion           >-< octal 2
-  >>> f_headerOwnerUserName     >-< bytes' 32
-  >>> f_headerOwnerGroupName    >-< bytes' 32
-  >>> f_headerDeviceMajorNumber >-< octal 8
-  >>> f_headerDeviceMinorNumber >-< octal 8
-  >>> f_headerFilenamePrefix    >-< bytes' 155
+headerCodec =
+  Header
+    $>> f_headerName              >-< bytes' 100 -- Codec will de/serialize in this order
+    >>> f_headerMode              >-< octal 8
+    >>> f_headerOwnerUID          >-< octal 8
+    >>> f_headerOwnerGID          >-< octal 8
+    >>> f_headerFileSize          >-< octal 12
+    >>> f_headerModifyTime        >-< octal 12
+    >>> f_headerChecksum          >-< octal 8
+    >>> f_headerType              >-< word8
+    >>> f_headerLinkName          >-< bytes' 100
+    >>> f_headerMagic             >-< bytes' 6
+    >>> f_headerVersion           >-< octal 2
+    >>> f_headerOwnerUserName     >-< bytes' 32
+    >>> f_headerOwnerGroupName    >-< bytes' 32
+    >>> f_headerDeviceMajorNumber >-< octal 8
+    >>> f_headerDeviceMinorNumber >-< octal 8
+    >>> f_headerFilenamePrefix    >-< bytes' 155
 
 -- byte field with trailing nulls stripped
 bytes' :: Int -> BinaryCodec B.ByteString

@@ -4,7 +4,7 @@ module Data.Codec.Field
     Field(..)
   , Build(..)
   , Con(..)
-  , (>>>), done
+  , ($>>), (>>>), done
   , X(X), Buildable(..)
   , having, build
   ) where
@@ -57,6 +57,11 @@ instance Applicative f => Category (Build r f) where
 build :: (Functor f, Buildable r y) => x -> Build r f x y -> f r
 build x (Build b)
   = (\f -> give $ f x) <$> b
+
+-- | Infix version of `build`.
+($>>) :: (Functor f, Buildable r y) => x -> Build r f x y -> f r
+($>>) = build
+infixr 1 $>>
 
 -- | A constructor for a given record and a way to check whether it has it.
 data Con r x = Con x (r -> Bool)
