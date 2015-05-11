@@ -124,11 +124,11 @@ test-suite Examples
                        Examples.JSON,
                        Examples.Multi,
                        Examples.Tar
-  build-depends:       base >=4.8,
+  build-depends:       base >=4.6,
                        bytestring >=0.10,
                        binary >=0.7,
                        binary-bits >=0.5,
-                       template-haskell >=2.10,
+                       template-haskell >=2.8,
                        mtl >= 2.2.1,
                        aeson >= 0.8.0.2,
                        text >= 1.2.0.4,
