@@ -6,6 +6,7 @@ module Data.Binary.Bits.Codec
   )
 where
 
+import Control.Applicative
 import qualified Data.Binary.Bits.Get as G
 import Data.Binary.Bits.Put
 import qualified Data.Binary.Codec as B

@@ -9,6 +9,7 @@ module Data.Codec.Field
   , having, build
   ) where
 
+import Control.Applicative
 import Control.Category
 import Prelude hiding ((.), id)
 

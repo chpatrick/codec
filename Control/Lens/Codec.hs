@@ -13,6 +13,6 @@ import Data.Codec
 lensCodec :: (MonadReader s fr, MonadState s fw)
   => (forall f. (a -> f a) -> s -> f s) -> Codec fr fw a
 lensCodec l = Codec
-  { parse = getConst <$> asks (l Const)
+  { parse = liftM getConst $ asks (l Const)
   , produce = \x -> modify (runIdentity . l (const $ Identity x))
   }

@@ -1,7 +1,8 @@
 module Data.Codec.TH (genFields) where
 
+import Control.Applicative
 import Data.Foldable (foldl')
-import Data.Traversable (for)
+import Data.Traversable (for, traverse)
 import Language.Haskell.TH as TH
 import Language.Haskell.TH.Syntax as TH
 

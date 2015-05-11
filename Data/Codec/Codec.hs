@@ -13,7 +13,7 @@ module Data.Codec.Codec
   )
 where
 
-import Control.Applicative (Alternative(..), optional, Const(..))
+import Control.Applicative
 import Control.Monad ((>=>))
 import Control.Monad.Reader (ReaderT(..))
 import Data.Codec.Field

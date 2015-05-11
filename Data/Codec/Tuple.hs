@@ -20,10 +20,10 @@ instance Field2 ( a, b ) b (a1 -> b -> ( a, b )) (a1 -> X -> ( a, b )) where
   f_2 = Field (\x c a1 _ -> c a1 x) snd
 
 c_Left :: Con (Either a b) (a -> Either a b)
-c_Left = Con Left isLeft
+c_Left = Con Left (\case { Left _ -> True; _ -> False })
 
 c_Right :: Con (Either a b) (b -> Either a b)
-c_Right = Con Right isRight
+c_Right = Con Right (\case { Right _ -> True; _ -> False })
 
 f_left :: Field (Either a b) a (a -> Either a b) (X -> Either a b)
 f_left = Field (\x c _ -> c x) (\(Left l) -> l)
