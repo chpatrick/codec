@@ -1,5 +1,7 @@
 # Data.Codec [![Build Status](https://travis-ci.org/chpatrick/codec.svg)](https://travis-ci.org/chpatrick/codec)
 
+[Online documentation](http://chpatrick.github.io/codec/)
+
 Tired of writing complementary `parseJSON`/`toJSON`, `peek`/`poke` or Binary `get`/`put` functions?
 
 `codec` provides easy bidirectional serialization of plain Haskell records in any Applicative context.
@@ -12,11 +14,11 @@ JSON!
   
     userCodec :: JSONCodec User
     userCodec = obj "user object" $
-    User
-      $>> f_username      >-< "user"
-      >>> f_userEmail     >-< "email"
-      >>> f_userLanguages >-< "languages"
-      >>> f_userReferrer  >-< opt "referrer"
+      User
+        $>> f_username      >-< "user"
+        >>> f_userEmail     >-< "email"
+        >>> f_userLanguages >-< "languages"
+        >>> f_userReferrer  >-< opt "referrer"
   
     instance FromJSON User where
       parseJSON = parseVal userCodec
