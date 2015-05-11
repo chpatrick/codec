@@ -1,5 +1,6 @@
 name:                codec
-version:             0.0.1
+version:             0.1
+license:             BSD3
 synopsis:            First-class record construction and bidirectional serialization
 description:
   Easy bidirectional serialization of plain Haskell types in any Applicative context.
