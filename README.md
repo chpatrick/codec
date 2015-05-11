@@ -10,7 +10,16 @@ and you get a de/serializer for the whole structure. The type system ensures tha
 every record exactly once. It also includes a library for general record construction in an Applicative context,
 of which creating codecs is just one application.
   
-JSON!
+JSON! ([full example](https://github.com/chpatrick/codec/blob/master/Examples/JSON.hs))
+  
+    data User = User
+      { username :: Text
+      , userEmail :: Text
+      , userLanguages :: [ Text ]
+      , userReferrer :: Maybe User
+      } deriving Show
+
+	genFields ''User
   
     userCodec :: JSONCodec User
     userCodec = obj "user object" $
@@ -26,7 +35,7 @@ JSON!
     instance ToJSON User where
       toJSON = produceVal userCodec
   
-Bit fields!
+Bit fields! ([full example](https://github.com/chpatrick/codec/blob/master/Examples/IP.hs))
   
     ipv4Codec :: BinaryCodec IPv4
     ipv4Codec = toBytes $
@@ -49,7 +58,7 @@ Bit fields!
       get = parse ipv4Codec
       put = produce ipv4Codec
   
-Storable!
+Storable! ([full example](https://github.com/chpatrick/codec/blob/master/Examples/Foreign.hsc))
   
     timeSpecCodec :: ForeignCodec TimeSpec
     timeSpecCodec =
