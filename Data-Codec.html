@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Data.Codec</title><link href="ocean.css" rel="stylesheet" type="text/css" title="Ocean" /><script src="haddock-util.js" type="text/javascript"></script><script type="text/javascript">//<![CDATA[
+window.onload = function () {pageLoad();setSynopsis("mini_Data-Codec.html");};
+//]]>
+</script></head><body><div id="package-header"><ul class="links" id="page-menu"><li><a href="index.html">Contents</a></li><li><a href="doc-index.html">Index</a></li></ul><p class="caption">codec-0.1: First-class record construction and bidirectional serialization</p></div><div id="content"><div id="module-header"><table class="info"><tr><th>Safe Haskell</th><td>None</td></tr><tr><th>Language</th><td>Haskell2010</td></tr></table><p class="caption">Data.Codec</p></div><div id="synopsis"><p id="control.syn" class="caption expander" onclick="toggleSection('syn')">Synopsis</p><ul id="section.syn" class="hide" onclick="toggleSection('syn')"><li class="src short">module <a href="Data-Codec-Field.html">Data.Codec.Field</a></li><li class="src short">module <a href="Data-Codec-Codec.html">Data.Codec.Codec</a></li><li class="src short">module <a href="Data-Codec-TH.html">Data.Codec.TH</a></li><li class="src short">module <a href="Data-Codec-Tuple.html">Data.Codec.Tuple</a></li></ul></div><div id="interface"><h1>Documentation</h1><div class="doc"><p>The main purpose of this package is to make the creation of <code><a href="Data-Codec-Codec.html#t:Codec">Codec</a></code>s as easy and painless as possible.
+ If we have a data type such as:</p><pre>data User = User
+ { username :: Text
+ , userEmail :: Text
+ , userLanguages :: [ Text ]
+ , userReferrer :: Maybe Text
+ } deriving Show
+</pre><p>we can use the <code><a href="Data-Codec-TH.html#v:genFields">genFields</a></code> function to generate <code><a href="Data-Codec-Field.html#t:Field">Field</a></code>s for each record field:</p><pre>genFields ''User
+</pre><p>This will create <code><a href="Data-Codec-Field.html#t:Field">Field</a></code>s named <code>f_username</code>, <code>f_userEmail</code>, etc. These fields can be associated with an
+ appropriate <code><a href="Data-Codec-Codec.html#t:Codec">Codec</a></code> with the <code><a href="Data-Codec-Codec.html#v:-62--45--60-">&gt;-&lt;</a></code> operator to specify the representation of the data structure. These
+ associations can then be combined with the <code><a href="Data-Codec-Field.html#v:-62--62--62-">&gt;&gt;&gt;</a></code> operator in the order of serialization/deserialization.
+ These associations can then be finalized into a <code><a href="Data-Codec-Codec.html#t:Codec">Codec</a></code> by providng the constructor to use.
+ For example, using the JSON <code>entry</code> <code><a href="Data-Codec-Codec.html#t:Codec">Codec</a></code> that assigns a value to a JSON key, we could write a codec for
+ <code>User</code> as:</p><pre> userCodec :: JSONCodec User
+ userCodec = obj &quot;user object' $
+   User
+     $&gt;&gt; f_username      &gt;-&lt; &quot;user&quot;
+     &gt;&gt;&gt; f_userEmail     &gt;-&lt; &quot;email&quot;
+     &gt;&gt;&gt; f_userLanguages &gt;-&lt; &quot;languages&quot;
+     &gt;&gt;&gt; f_userReferrer  &gt;-&lt; opt &quot;referrer&quot;
+</pre><p>The type system ensures that every field is provided exactly once.</p></div><div class="top"><p class="src">module <a href="Data-Codec-Field.html">Data.Codec.Field</a></p></div><div class="top"><p class="src">module <a href="Data-Codec-Codec.html">Data.Codec.Codec</a></p></div><div class="top"><p class="src">module <a href="Data-Codec-TH.html">Data.Codec.TH</a></p></div><div class="top"><p class="src">module <a href="Data-Codec-Tuple.html">Data.Codec.Tuple</a></p></div></div></div><div id="footer"><p>Produced by <a href="http://www.haskell.org/haddock/">Haddock</a> version 2.16.0</p></div></body></html>

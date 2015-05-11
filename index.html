@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>codec-0.1: First-class record construction and bidirectional serialization</title><link href="ocean.css" rel="stylesheet" type="text/css" title="Ocean" /><script src="haddock-util.js" type="text/javascript"></script><script type="text/javascript">//<![CDATA[
+window.onload = function () {pageLoad();};
+//]]>
+</script></head><body><div id="package-header"><ul class="links" id="page-menu"><li><a href="index.html">Contents</a></li><li><a href="doc-index.html">Index</a></li></ul><p class="caption">codec-0.1: First-class record construction and bidirectional serialization</p></div><div id="content"><div id="description"><h1>codec-0.1: First-class record construction and bidirectional serialization</h1><div class="doc"><h1>Data.Codec</h1><p><a name="data.codec"></a></p><p>Tired of writing complementary <code>parseJSON</code>/<code>toJSON</code>, <code>peek</code>/<code>poke</code> or
+Binary <code>get</code>/<code>put</code> functions?</p><p><code>codec</code> provides easy bidirectional serialization of plain Haskell
+records in any Applicative context. All you need to do is provide a
+de/serializer for every record field in any order you like, and you get
+a de/serializer for the whole structure. The type system ensures that
+you provide every record exactly once. It also includes a library for
+general record construction in an Applicative context, of which creating
+codecs is just one application.</p><p>JSON!</p><pre>userCodec :: JSONCodec User
+userCodec = obj &quot;user object&quot; $
+User
+  $&gt;&gt; f_username      &gt;-&lt; &quot;user&quot;
+  &gt;&gt;&gt; f_userEmail     &gt;-&lt; &quot;email&quot;
+  &gt;&gt;&gt; f_userLanguages &gt;-&lt; &quot;languages&quot;
+  &gt;&gt;&gt; f_userReferrer  &gt;-&lt; opt &quot;referrer&quot;
+
+instance FromJSON User where
+  parseJSON = parseVal userCodec
+
+instance ToJSON User where
+  toJSON = produceVal userCodec</pre><p>Bit fields!</p><pre>ipv4Codec :: BinaryCodec IPv4
+ipv4Codec = toBytes $
+  IPv4
+    $&gt;&gt; f_version         &gt;-&lt; word8 4
+    &gt;&gt;&gt; f_ihl             &gt;-&lt; word8 4
+    &gt;&gt;&gt; f_dscp            &gt;-&lt; word8 6
+    &gt;&gt;&gt; f_ecn             &gt;-&lt; word8 2
+    &gt;&gt;&gt; f_totalLength     &gt;-&lt; word16be 16
+    &gt;&gt;&gt; f_identification  &gt;-&lt; word16be 16
+    &gt;&gt;&gt; f_flags           &gt;-&lt; word8 3
+    &gt;&gt;&gt; f_fragmentOffset  &gt;-&lt; word16be 13
+    &gt;&gt;&gt; f_timeToLive      &gt;-&lt; word8 8
+    &gt;&gt;&gt; f_protocol        &gt;-&lt; word8 8
+    &gt;&gt;&gt; f_headerChecksum  &gt;-&lt; word16be 16
+    &gt;&gt;&gt; f_sourceIP        &gt;-&lt; word32be 32
+    &gt;&gt;&gt; f_destIP          &gt;-&lt; word32be 32
+
+instance Binary IPv4 where
+  get = parse ipv4Codec
+  put = produce ipv4Codec</pre><p>Storable!</p><pre>timeSpecCodec :: ForeignCodec TimeSpec
+timeSpecCodec =
+  TimeSpec
+    $&gt;&gt; f_seconds     &gt;-&lt; field (#offset struct timespec, tv_sec)  cInt
+    &gt;&gt;&gt; f_nanoseconds &gt;-&lt; field (#offset struct timespec, tv_nsec) cInt
+
+instance Storable TimeSpec where
+  peek = peekWith timeSpecCodec
+  poke = pokeWith timeSpecCodec
+  ...</pre><p>All of these examples use the same types and logic for constructing
+Codecs, and it's very easy to create Codecs for any
+parsing/serialization library.</p><p>See <a href="Data-Codec.html">Data.Codec</a> for an introduction.</p></div></div><div id="module-list"><p class="caption">Modules</p><ul><li><span id="control.n.1" class="module collapser" onclick="toggleSection('n.1')">Control</span><ul id="section.n.1" class="show"><li><span id="control.n.1.1" class="module collapser" onclick="toggleSection('n.1.1')">Lens</span><ul id="section.n.1.1" class="show"><li><span class="module"><a href="Control-Lens-Codec.html">Control.Lens.Codec</a></span></li></ul></li></ul></li><li><span id="control.n.2" class="module collapser" onclick="toggleSection('n.2')">Data</span><ul id="section.n.2" class="show"><li><span id="control.n.2.1" class="module collapser" onclick="toggleSection('n.2.1')">Aeson</span><ul id="section.n.2.1" class="show"><li><span class="module"><a href="Data-Aeson-Codec.html">Data.Aeson.Codec</a></span></li></ul></li><li><span id="control.n.2.2" class="module collapser" onclick="toggleSection('n.2.2')">Binary</span><ul id="section.n.2.2" class="show"><li><span id="control.n.2.2.1" class="module collapser" onclick="toggleSection('n.2.2.1')">Bits</span><ul id="section.n.2.2.1" class="show"><li><span class="module"><a href="Data-Binary-Bits-Codec.html">Data.Binary.Bits.Codec</a></span></li></ul></li><li><span class="module"><a href="Data-Binary-Codec.html">Data.Binary.Codec</a></span></li></ul></li><li><span class="module"><span id="control.n.2.3" class="collapser" onclick="toggleSection('n.2.3')">&nbsp;</span><a href="Data-Codec.html">Data.Codec</a></span><ul id="section.n.2.3" class="show"><li><span class="module"><a href="Data-Codec-Codec.html">Data.Codec.Codec</a></span></li><li><span class="module"><a href="Data-Codec-Field.html">Data.Codec.Field</a></span></li><li><span class="module"><a href="Data-Codec-TH.html">Data.Codec.TH</a></span></li><li><span class="module"><a href="Data-Codec-Testing.html">Data.Codec.Testing</a></span></li><li><span class="module"><a href="Data-Codec-Tuple.html">Data.Codec.Tuple</a></span></li></ul></li></ul></li><li><span id="control.n.3" class="module collapser" onclick="toggleSection('n.3')">Foreign</span><ul id="section.n.3" class="show"><li><span class="module"><a href="Foreign-Codec.html">Foreign.Codec</a></span></li></ul></li></ul></div></div><div id="footer"><p>Produced by <a href="http://www.haskell.org/haddock/">Haddock</a> version 2.16.0</p></div></body></html>
