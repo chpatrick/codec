@@ -1,4 +1,4 @@
-# Data.Codec
+# Data.Codec [![Build Status](https://travis-ci.org/chpatrick/codec.svg)](https://travis-ci.org/chpatrick/codec)
 
 Tired of writing complementary `parseJSON`/`toJSON`, `peek`/`poke` or Binary `get`/`put` functions?
 
