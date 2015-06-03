@@ -1,5 +1,5 @@
 name:                codec
-version:             0.1
+version:             0.1.1
 license:             BSD3
 license-file:        LICENSE
 synopsis:            First-class record construction and bidirectional serialization
@@ -87,9 +87,12 @@ source-repository head
 
 library
   exposed-modules:     Data.Codec,
+                       Data.Codec.Field,
+                       Data.Codec.Codec,
+                       Data.Codec.TH,
+                       Data.Codec.Tuple,
                        Data.Codec.Testing,
 
-                       Control.Lens.Codec,
                        Data.Aeson.Codec,
                        Data.Binary.Codec,
                        Data.Binary.Bits.Codec,
