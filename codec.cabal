@@ -11,7 +11,7 @@ description:
   records in any Applicative context. All you need to do is provide a
   de\/serializer for every record field in any order you like, and you get
   a de\/serializer for the whole structure. The type system ensures that
-  you provide every record exactly once. It also includes a library for
+  you provide every field exactly once. It also includes a library for
   general record construction in an Applicative context, of which creating
   codecs is just one application.
   .
