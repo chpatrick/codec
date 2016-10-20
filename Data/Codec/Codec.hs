@@ -10,7 +10,7 @@ module Data.Codec.Codec
   , PartialCodec, cbuild, assume, covered, (<->), produceMaybe
     -- * Codec combinators
   , opt, mapCodec, mapCodecF, mapCodecM
-  , mapCodec', comapCodec', (=.)
+  , comapCodec', (=.)
   )
 where
 
@@ -20,6 +20,7 @@ import Control.Monad.Reader (ReaderT(..))
 import Data.Codec.Field
 import Data.Functor.Compose
 import Data.Maybe (fromMaybe)
+import Data.Profunctor
 
 -- | De/serializer for the given types. Usually w ~ r, but they are separate
 -- to allow for an `Applicative` instance.
@@ -50,9 +51,13 @@ Field c g >-< Codec r w
 opt :: (Alternative fr, Applicative fw) => Codec fr fw a -> Codec fr fw (Maybe a)
 opt (Codec r w) = Codec (optional r) (maybe (pure ()) w)
 
+instance Functor fr => Profunctor (Codec' fr fw) where
+  dimap from to (Codec r w)
+    = Codec (to <$> r) (w . from)
+
 -- | Turn a @`Codec` a@ into a @`Codec` b@ by providing an isomorphism.
 mapCodec :: Functor fr => (a -> b) -> (b -> a) -> Codec fr fw a -> Codec fr fw b
-mapCodec = mapCodec'
+mapCodec to from = dimap from to
 
 -- | Map a field codec monadically. Useful for error handling but care must be taken to make sure that
 -- the results are still complementary.
@@ -64,13 +69,6 @@ mapCodecM to from (Codec r w)
 mapCodecF :: (fr a -> gr a) -> (fw () -> gw ()) -> Codec fr fw a -> Codec gr gw a
 mapCodecF fr fw (Codec r w)
   = Codec (fr r) (fw . w)
-
--- | Independently map the two components of a `Codec'`.
---
--- Generalizes `mapCodec`.
-mapCodec' :: Functor fr => (a -> b) -> (c -> d) -> Codec' fr fw d a -> Codec' fr fw c b
-mapCodec' to from (Codec r w)
-  = Codec (to <$> r) (w . from)
 
 -- | Map on the `produce` component of a `Codec`.
 --
