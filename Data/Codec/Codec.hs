@@ -10,6 +10,7 @@ module Data.Codec.Codec
   , PartialCodec, cbuild, assume, covered, (<->), produceMaybe
     -- * Codec combinators
   , opt, mapCodec, mapCodecF, mapCodecM
+  , mapCodec', comapCodec', (=.)
   )
 where
 
@@ -51,8 +52,7 @@ opt (Codec r w) = Codec (optional r) (maybe (pure ()) w)
 
 -- | Turn a @`Codec` a@ into a @`Codec` b@ by providing an isomorphism.
 mapCodec :: Functor fr => (a -> b) -> (b -> a) -> Codec fr fw a -> Codec fr fw b
-mapCodec to from (Codec r w)
-  = Codec (to <$> r) (w . from)
+mapCodec = mapCodec'
 
 -- | Map a field codec monadically. Useful for error handling but care must be taken to make sure that
 -- the results are still complementary.
@@ -64,6 +64,32 @@ mapCodecM to from (Codec r w)
 mapCodecF :: (fr a -> gr a) -> (fw () -> gw ()) -> Codec fr fw a -> Codec gr gw a
 mapCodecF fr fw (Codec r w)
   = Codec (fr r) (fw . w)
+
+-- | Independently map the two components of a `Codec'`.
+--
+-- Generalizes `mapCodec`.
+mapCodec' :: Functor fr => (a -> b) -> (c -> d) -> Codec' fr fw d a -> Codec' fr fw c b
+mapCodec' to from (Codec r w)
+  = Codec (to <$> r) (w . from)
+
+-- | Map on the `produce` component of a `Codec`.
+--
+-- @
+-- comapCodec' = mapCodec' id
+-- @
+--
+-- But `comapCodec'` does not require a `Functor` constraint.
+comapCodec' :: (c -> d) -> Codec' fr fw d a -> Codec' fr fw c a
+comapCodec' from (Codec r w)
+  = Codec r (w . from)
+
+-- | Infix synonym of `comapCodec'`.
+--
+-- The symbol mimics a record-like syntax in applicative definitions.
+(=.) :: (b -> a') -> Codec' fr fw a' a -> Codec' fr fw b a
+(=.) = comapCodec'
+
+infixr 5 =.
 
 -- | A codec where `a` can be produced from a concrete value of `b` in context `f`,
 -- and a concrete type of value `b` can always be produced.
