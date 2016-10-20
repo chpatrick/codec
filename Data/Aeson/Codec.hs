@@ -33,7 +33,7 @@ type ObjectBuilder = Const (Endo [ Pair ])
 type ObjectCodec a = Codec ObjectParser ObjectBuilder a
 
 -- | Produce a key-value pair.
-pair :: ToJSON a => T.Text -> a -> ObjectBuilder ()
+pair :: ToJSON a => T.Text -> a -> ObjectBuilder b
 pair key val = Const $ Endo ((key .= val):)
 
 -- | Read\/write a given value from/to a given key in the current object, using a given sub-codec.

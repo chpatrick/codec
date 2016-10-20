@@ -7,6 +7,7 @@ module Foreign.Codec
   ) where
 
 import Control.Monad.Reader
+import Data.Functor ((<$))
 import Foreign
 
 import Data.Codec.Codec
@@ -26,7 +27,7 @@ peekWith (Codec r _)
 -- | Poke a value using a `ForeignCodec'`.
 pokeWith :: ForeignCodec' p a -> Ptr p -> a -> IO ()
 pokeWith (Codec _ w) ptr x
-  = runReaderT (w x) ptr
+  = runReaderT (() <$ w x) ptr
 
 -- | A codec for a field of a foreign structure, given its byte offset and a sub-codec.
 -- You can get an offset easily using @{#offset struct_type, field}@ with @hsc2hs@.
@@ -38,7 +39,7 @@ field off cd = Codec
 
 -- | A `ForeignCodec` for any `Storable` type.
 storable :: Storable a => ForeignCodec a
-storable = Codec (ReaderT peek) (\x -> ReaderT (`poke`x))
+storable = codec (ReaderT peek) (\x -> ReaderT (`poke`x))
 
 castContext :: ForeignCodec' c a -> ForeignCodec' c' a
 castContext = mapCodecF castc castc
