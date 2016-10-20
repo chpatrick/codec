@@ -106,7 +106,7 @@ library
                        FunctionalDependencies,
                        DeriveFunctor,
                        ScopedTypeVariables
-  build-depends:       base >=4.6 && < 4.9,
+  build-depends:       base >=4.6 && < 6,
                        bytestring >=0.10,
                        binary >=0.7,
                        binary-bits >=0.5,

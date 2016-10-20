@@ -78,7 +78,7 @@ genCon recVars recType cc
 -- Each record field @a@ will be turned into a `Field` @f_a@, and all constructors will be turned into `Con`s.
 genFields :: Name -> Q [ Dec ]
 genFields n = reify n >>= \case
-  TyConI (DataD [] _ vs cs _) -> do
+  TyConI (DataD [] _ vs _ cs _) -> do
       recVars <- for vs $ \case
         PlainTV vn -> return vn
         KindedTV vn k | k == starK -> return vn
