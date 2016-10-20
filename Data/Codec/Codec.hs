@@ -1,6 +1,7 @@
 module Data.Codec.Codec
   ( -- * Codecs
     Codec'(..), Codec
+  , codec
   , (>-<)
     -- * Concrete codecs
   , ConcreteCodec, concrete, parseVal, produceVal
@@ -18,15 +19,17 @@ import Control.Applicative
 import Control.Monad ((>=>))
 import Control.Monad.Reader (ReaderT(..))
 import Data.Codec.Field
+import Data.Functor ((<$))
 import Data.Functor.Compose
 import Data.Maybe (fromMaybe)
 import Data.Profunctor
+import Data.Traversable (traverse)
 
--- | De/serializer for the given types. Usually w ~ r, but they are separate
+-- | De/serializer for the given types. Usually `w ~ r`, but they are separate
 -- to allow for an `Applicative` instance.
 data Codec' fr fw w r = Codec
   { parse :: fr r
-  , produce :: w -> fw () 
+  , produce :: w -> fw r
   }
   deriving Functor
 
@@ -35,12 +38,21 @@ type Codec fr fw a = Codec' fr fw a a
 
 -- Build up a serializer in parallel to a deserializer.
 instance (Applicative fw, Applicative fr) => Applicative (Codec' fr fw w) where
-  pure x = Codec (pure x) (const $ pure ())
+  pure x = Codec (pure x) (const $ pure x)
   Codec f fw <*> Codec x xw
-    = Codec (f <*> x) (\w -> fw w *> xw w)
+    = Codec (f <*> x) (\w -> fw w <*> xw w)
+
+instance (Monad fw, Monad fr) => Monad (Codec' fr fw w) where
+  return x = Codec (return x) (const $ return x)
+  Codec a aw >>= f
+    = Codec (a >>= parse . f) (\w -> aw w >>= \a -> produce (f a) w)
+
+-- | Constructor of basic codecs.
+codec :: Functor fw => fr r -> (r -> fw ()) -> Codec fr fw r
+codec parse produce = Codec parse (\r -> r <$ produce r)
 
 -- | Associate a `Field` with a `Codec` to create a `Codec` `Build`.
-(>-<) :: Functor fr => Field r a x y -> Codec fr fw a -> Build r (Codec' fr fw r) x y
+(>-<) :: (Functor fr, Functor fw) => Field r a x y -> Codec fr fw a -> Build r (Codec' fr fw r) x y
 Field c g >-< Codec r w
   = Build (c <$> Codec r (w . g))
 
@@ -49,24 +61,24 @@ Field c g >-< Codec r w
 -- | Given a `Codec` for @a@, make one for `Maybe` @a@ that applies its deserializer optionally
 -- and does nothing when serializing `Nothing`.
 opt :: (Alternative fr, Applicative fw) => Codec fr fw a -> Codec fr fw (Maybe a)
-opt (Codec r w) = Codec (optional r) (maybe (pure ()) w)
+opt (Codec r w) = Codec (optional r) (traverse w)
 
-instance Functor fr => Profunctor (Codec' fr fw) where
+instance (Functor fr, Functor fw) => Profunctor (Codec' fr fw) where
   dimap from to (Codec r w)
-    = Codec (to <$> r) (w . from)
+    = Codec (to <$> r) ((to <$>) . w . from)
 
 -- | Turn a @`Codec` a@ into a @`Codec` b@ by providing an isomorphism.
-mapCodec :: Functor fr => (a -> b) -> (b -> a) -> Codec fr fw a -> Codec fr fw b
+mapCodec :: (Functor fr, Functor fw) => (a -> b) -> (b -> a) -> Codec fr fw a -> Codec fr fw b
 mapCodec to from = dimap from to
 
 -- | Map a field codec monadically. Useful for error handling but care must be taken to make sure that
 -- the results are still complementary.
 mapCodecM :: (Monad fr, Monad fw) => (a -> fr b) -> (b -> fw a) -> Codec fr fw a -> Codec fr fw b
 mapCodecM to from (Codec r w)
-  = Codec (r >>= to) (from >=> w)
+  = Codec (r >>= to) (\b -> from b >>= w >> return b)
 
 -- | Map the contexts of a given `Codec`.
-mapCodecF :: (fr a -> gr a) -> (fw () -> gw ()) -> Codec fr fw a -> Codec gr gw a
+mapCodecF :: (fr a -> gr a) -> (fw a -> gw a) -> Codec fr fw a -> Codec gr gw a
 mapCodecF fr fw (Codec r w)
   = Codec (fr r) (fw . w)
 
@@ -111,7 +123,7 @@ type PartialCodec fr fw a = Codec fr (Compose Maybe fw) a
 -- | Finish a codec construction with a @`Con` r@ to produce a `PartialCodec`.
 -- This will check that the given record has the appropriate constructor
 -- before serializing.
-cbuild :: (Functor fr, Buildable r y)
+cbuild :: (Functor fr, Functor fw, Buildable r y)
   => Con r x -> Build r (Codec' fr fw r) x y -> PartialCodec fr fw r
 cbuild (Con c p) = assume p . build c
 
@@ -134,6 +146,6 @@ cd <-> acd = Codec
 }
 
 -- | Attempt to get a serialization for a given value.
-produceMaybe :: PartialCodec fr fw a -> a -> Maybe (fw ())
+produceMaybe :: PartialCodec fr fw a -> a -> Maybe (fw a)
 produceMaybe (Codec _ w) x
   = getCompose (w x)
