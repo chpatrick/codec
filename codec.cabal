@@ -86,26 +86,10 @@ source-repository head
   location:            https://github.com/chpatrick/codec.git
 
 library
-  exposed-modules:     Data.Codec,
-                       Data.Codec.Field,
-                       Data.Codec.Codec,
-                       Data.Codec.TH,
-                       Data.Codec.Tuple,
-                       Data.Codec.Testing,
-
+  exposed-modules:     Control.Monad.Codec,
                        Data.Aeson.Codec,
                        Data.Binary.Codec,
-                       Data.Binary.Bits.Codec,
-                       Foreign.Codec
-  -- other-modules:       
-  default-extensions:  TemplateHaskell,
-                       MultiParamTypeClasses,
-                       FlexibleContexts,
-                       FlexibleInstances,
-                       LambdaCase,
-                       FunctionalDependencies,
-                       DeriveFunctor,
-                       ScopedTypeVariables
+                       Data.Binary.Bits.Codec
   build-depends:       base >=4.6 && < 6,
                        bytestring >=0.10,
                        binary >=0.7,
@@ -115,37 +99,36 @@ library
                        aeson >= 0.8.0.2,
                        text >= 1.2.0.4,
                        unordered-containers >= 0.2.5.1,
-                       data-default-class >= 0.0.1,
                        transformers >= 0.4.2.0,
                        profunctors
   -- hs-source-dirs:      
   default-language:    Haskell2010
-  ghc-options:         -Wall -fno-warn-orphans
+  ghc-options:         -Wall
 
-test-suite Examples
-  default-language:    Haskell2010
-  type:                exitcode-stdio-1.0
-  main-is:             TestExamples.hs
-  other-modules:       Examples.Foreign,
-                       Examples.IP,
-                       Examples.JSON,
-                       Examples.Multi,
-                       Examples.Tar
-  build-depends:       base >=4.6,
-                       bytestring >=0.10,
-                       binary >=0.7,
-                       binary-bits >=0.5,
-                       template-haskell >=2.8,
-                       mtl >= 2.2.1,
-                       aeson >= 0.8.0.2,
-                       text >= 1.2.0.4,
-                       unordered-containers >= 0.2.5.1,
-                       data-default-class >= 0.0.1,
-                       transformers >= 0.4.2.0
-  default-extensions:  TemplateHaskell,
-                       MultiParamTypeClasses,
-                       FlexibleInstances,
-                       DeriveFunctor,
-                       FunctionalDependencies,
-                       LambdaCase,
-                       ScopedTypeVariables
+-- test-suite Examples
+--   default-language:    Haskell2010
+--   type:                exitcode-stdio-1.0
+--   main-is:             TestExamples.hs
+--   other-modules:       Examples.Foreign,
+--                        Examples.IP,
+--                        Examples.JSON,
+--                        Examples.Multi,
+--                        Examples.Tar
+--   build-depends:       base >=4.6,
+--                        bytestring >=0.10,
+--                        binary >=0.7,
+--                        binary-bits >=0.5,
+--                        template-haskell >=2.8,
+--                        mtl >= 2.2.1,
+--                        aeson >= 0.8.0.2,
+--                        text >= 1.2.0.4,
+--                        unordered-containers >= 0.2.5.1,
+--                        data-default-class >= 0.0.1,
+--                        transformers >= 0.4.2.0
+--   default-extensions:  TemplateHaskell,
+--                        MultiParamTypeClasses,
+--                        FlexibleInstances,
+--                        DeriveFunctor,
+--                        FunctionalDependencies,
+--                        LambdaCase,
+--                        ScopedTypeVariables
