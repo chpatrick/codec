@@ -3,81 +3,12 @@ version:             0.1.1
 license:             BSD3
 license-file:        LICENSE
 synopsis:            First-class record construction and bidirectional serialization
-description:
-  Tired of writing complementary @parseJSON@\/@toJSON@, @peek@\/@poke@ or
-  Binary @get@\/@put@ functions?
-  .
-  @codec@ provides easy bidirectional serialization of plain Haskell
-  records in any Applicative context. All you need to do is provide a
-  de\/serializer for every record field in any order you like, and you get
-  a de\/serializer for the whole structure. The type system ensures that
-  you provide every field exactly once. It also includes a library for
-  general record construction in an Applicative context, of which creating
-  codecs is just one application.
-  .
-  JSON!
-  .
-  > userCodec :: JSONCodec User
-  > userCodec = obj "user object" $
-  > User
-  >   $>> f_username      >-< "user"
-  >   >>> f_userEmail     >-< "email"
-  >   >>> f_userLanguages >-< "languages"
-  >   >>> f_userReferrer  >-< opt "referrer"
-  >
-  > instance FromJSON User where
-  >   parseJSON = parseVal userCodec
-  >
-  > instance ToJSON User where
-  >   toJSON = produceVal userCodec
-  .
-  Bit fields!
-  .
-  > ipv4Codec :: BinaryCodec IPv4
-  > ipv4Codec = toBytes $
-  >   IPv4
-  >     $>> f_version         >-< word8 4
-  >     >>> f_ihl             >-< word8 4
-  >     >>> f_dscp            >-< word8 6
-  >     >>> f_ecn             >-< word8 2
-  >     >>> f_totalLength     >-< word16be 16
-  >     >>> f_identification  >-< word16be 16
-  >     >>> f_flags           >-< word8 3
-  >     >>> f_fragmentOffset  >-< word16be 13
-  >     >>> f_timeToLive      >-< word8 8
-  >     >>> f_protocol        >-< word8 8
-  >     >>> f_headerChecksum  >-< word16be 16
-  >     >>> f_sourceIP        >-< word32be 32
-  >     >>> f_destIP          >-< word32be 32
-  >
-  > instance Binary IPv4 where
-  >   get = parse ipv4Codec
-  >   put = produce ipv4Codec
-  .
-  Storable!
-  .
-  > timeSpecCodec :: ForeignCodec TimeSpec
-  > timeSpecCodec =
-  >   TimeSpec
-  >     $>> f_seconds     >-< field (#offset struct timespec, tv_sec)  cInt
-  >     >>> f_nanoseconds >-< field (#offset struct timespec, tv_nsec) cInt
-  >
-  > instance Storable TimeSpec where
-  >   peek = peekWith timeSpecCodec
-  >   poke = pokeWith timeSpecCodec
-  >   ...
-  .
-  All of these examples use the same types and logic for constructing
-  Codecs, and it\'s very easy to create Codecs for any
-  parsing\/serialization library.
-  .
-  See "Data.Codec" for an introduction.
 author:              Patrick Chilton
 maintainer:          chpatrick@gmail.com
--- copyright:           
+-- copyright:
 category:            Data
 build-type:          Simple
--- extra-source-files:  
+-- extra-source-files:
 cabal-version:       >=1.10
 homepage:            https://github.com/chpatrick/codec
 
@@ -101,34 +32,6 @@ library
                        unordered-containers >= 0.2.5.1,
                        transformers >= 0.4.2.0,
                        profunctors
-  -- hs-source-dirs:      
+  -- hs-source-dirs:
   default-language:    Haskell2010
   ghc-options:         -Wall
-
--- test-suite Examples
---   default-language:    Haskell2010
---   type:                exitcode-stdio-1.0
---   main-is:             TestExamples.hs
---   other-modules:       Examples.Foreign,
---                        Examples.IP,
---                        Examples.JSON,
---                        Examples.Multi,
---                        Examples.Tar
---   build-depends:       base >=4.6,
---                        bytestring >=0.10,
---                        binary >=0.7,
---                        binary-bits >=0.5,
---                        template-haskell >=2.8,
---                        mtl >= 2.2.1,
---                        aeson >= 0.8.0.2,
---                        text >= 1.2.0.4,
---                        unordered-containers >= 0.2.5.1,
---                        data-default-class >= 0.0.1,
---                        transformers >= 0.4.2.0
---   default-extensions:  TemplateHaskell,
---                        MultiParamTypeClasses,
---                        FlexibleInstances,
---                        DeriveFunctor,
---                        FunctionalDependencies,
---                        LambdaCase,
---                        ScopedTypeVariables
