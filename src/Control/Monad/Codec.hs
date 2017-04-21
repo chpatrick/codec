@@ -13,6 +13,7 @@ module Control.Monad.Codec
 
 import           Data.Profunctor
 
+-- | A serializer/deserializer pair reading @a@ in context @r@ and writing @c@ in context @w@.
 data CodecFor r w c a = Codec
   { codecIn :: r a
   , codecOut :: c -> w a
@@ -43,8 +44,12 @@ instance (Functor r, Functor w) => Profunctor (CodecFor r w) where
     , codecOut = fmap fOut . codecOut . fIn
     }
 
+-- | Compose a function into the serializer of a `Codec`.
+-- Useful to modify a `Codec` so that it writes a particular record field.
 (=.) :: (c' -> c) -> CodecFor r w c a -> CodecFor r w c' a
 fIn =. codec = codec { codecOut = codecOut codec . fIn }
 
+-- | Modify a serializer function so that it also returns the serialized value,
+-- Useful for implementing codecs.
 fmapArg :: Functor f => (a -> f ()) -> a -> f a
 fmapArg f x = x <$ f x

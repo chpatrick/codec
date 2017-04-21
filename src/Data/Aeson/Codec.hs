@@ -79,6 +79,8 @@ asObject err objCodec = JSONCodec
 
 type ArrayParser = StateT [ Value ] Parser
 type ArrayBuilder = Writer ( Series, [ Value ] )
+
+-- | A codec that serializes data to a sequence of JSON array elements.
 type ArrayCodec a = Codec ArrayParser ArrayBuilder a
 
 -- | Expect/append an array element, using a given `JSONCodec`.
@@ -93,6 +95,7 @@ element' valCodec = Codec
   , codecOut = \val -> writer ( val, ( AEI.Value $ AEI.retagEncoding $ toEncodingCodec valCodec val, [ toJSONCodec valCodec val ] ) )
   }
 
+-- | Expect/append an array element, using the default serialization.
 element :: (FromJSON a, ToJSON a) => ArrayCodec a
 element = element' defJSON
 
