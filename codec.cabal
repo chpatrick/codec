@@ -1,9 +1,9 @@
 name:                codec
-version:             0.2
+version:             0.2.1
 license:             BSD3
 license-file:        LICENSE
 synopsis:            Simple bidirectional serialization
-description:         See README.md
+description:         See the README
 author:              Patrick Chilton
 maintainer:          chpatrick@gmail.com
 -- copyright:
@@ -12,6 +12,7 @@ build-type:          Simple
 -- extra-source-files:
 cabal-version:       >=1.10
 homepage:            https://github.com/chpatrick/codec
+extra-source-files:    README.md
 
 source-repository head
   type:                git
