@@ -1,8 +1,8 @@
 name:                codec
-version:             0.1.1
+version:             0.2
 license:             BSD3
 license-file:        LICENSE
-synopsis:            First-class record construction and bidirectional serialization
+synopsis:            Simple bidirectional serialization
 author:              Patrick Chilton
 maintainer:          chpatrick@gmail.com
 -- copyright:
@@ -31,7 +31,25 @@ library
                        text >= 1.2.0.4,
                        unordered-containers >= 0.2.5.1,
                        transformers >= 0.4.2.0,
-                       profunctors
-  -- hs-source-dirs:
+                       profunctors,
+                       vector
+  hs-source-dirs:      src
   default-language:    Haskell2010
   ghc-options:         -Wall
+
+test-suite codec-tests
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             test.hs
+  other-modules:       Data.Aeson.Codec.Test
+                       Data.Binary.Codec.Test
+  build-depends:       base,
+                       bytestring,
+                       aeson,
+                       codec,
+                       tasty,
+                       tasty-quickcheck,
+                       generic-arbitrary,
+                       binary
+  ghc-options:         -Wall
+  default-language:    Haskell2010

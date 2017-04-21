@@ -1,12 +1,14 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 module Control.Monad.Codec
   ( CodecFor(..)
   , Codec
   , (=.)
-  , voidCodec
+  , fmapArg
   ) where
 
 import           Data.Profunctor
@@ -44,8 +46,5 @@ instance (Functor r, Functor w) => Profunctor (CodecFor r w) where
 (=.) :: (c' -> c) -> CodecFor r w c a -> CodecFor r w c' a
 fIn =. codec = codec { codecOut = codecOut codec . fIn }
 
-voidCodec :: Functor w => r a -> (a -> w ()) -> Codec r w a
-voidCodec codecIn out = Codec
-  { codecIn
-  , codecOut = \x -> x <$ out x
-  }
+fmapArg :: Functor f => (a -> f ()) -> a -> f a
+fmapArg f x = x <$ f x
