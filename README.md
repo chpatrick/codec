@@ -97,4 +97,30 @@ recordBCodec =
     <*> recordBByteString64 =. byteString 64
 ```
 
+A `Codec` is just a combination of a deserializer `r a`, and a serializer `c -> w a`.
+```haskell
+data CodecFor r w c a = Codec
+  { codecIn :: r a
+  , codecOut :: c -> w a
+  }
+  
+type Codec r w a = CodecFor r w a a
+```
+With `binary` for example, `r` is `Get` and `w` is `PutM`. The reason we have an extra parameter `c` is so that we can associate a `Codec` with a particular field using the `=.` operator:
+
+`(=.) :: (c' -> c) -> CodecFor r w c a -> CodecFor r w c' a`
+
+`Codec` is an instance of `Functor`, `Applicative`, `Monad` and `Profunctor`. You can serialize in any order you like, regardless of field order in the data type:
+
+```haskell
+recordBCodecFlipped :: BinaryCodec RecordB
+recordBCodecFlipped = do
+  bs64 <- recordBByteString64 =. byteString 64
+  RecordB
+    <$> recordBWord16 =. word16host
+    <*> pure bs64
+```
+
+### Contributors
+
 `=.` operator and `Profunctor` approach thanks to [Xia Li-yao](https://github.com/lysxia)
