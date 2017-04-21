@@ -3,6 +3,7 @@ version:             0.2
 license:             BSD3
 license-file:        LICENSE
 synopsis:            Simple bidirectional serialization
+description:         See README.md
 author:              Patrick Chilton
 maintainer:          chpatrick@gmail.com
 -- copyright:
@@ -27,7 +28,7 @@ library
                        binary-bits,
                        template-haskell,
                        mtl,
-                       aeson,
+                       aeson >= 1.0.0.0,
                        text,
                        unordered-containers,
                        transformers,
