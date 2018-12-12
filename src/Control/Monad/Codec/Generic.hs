@@ -8,7 +8,6 @@ module Control.Monad.Codec.Generic
     , rchoose
     , lchoose
     , combine
-    , many'
     , (|*|)
     , (?>)
     , (<?)
@@ -68,7 +67,7 @@ combine ::
     => CodecFor r w a b
     -> CodecFor r w c d
     -> CodecFor r w (a, c) (b, d)
-combine a b = (\x y -> (x, y)) <$> fst =. a <*> snd =. b
+combine a b = (,) <$> fst =. a <*> snd =. b
 
 -- | Operator for `combine`
 (|*|) ::
