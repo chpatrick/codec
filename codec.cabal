@@ -20,6 +20,7 @@ source-repository head
 
 library
   exposed-modules:     Control.Monad.Codec,
+                       Control.Monad.Codec.Generic,
                        Data.Aeson.Codec,
                        Data.Binary.Codec,
                        Data.Binary.Bits.Codec
